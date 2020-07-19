@@ -2819,3 +2819,13 @@ input[type=submit] {
 .bs-searchbox .form-control{
 	height: 25px;
 }
+input[type=number] {
+    background-color: #f1f1f1;
+    width: 100%;
+}
+.no-wrap-text{
+	white-space : nowrap;
+}
+.min-width-100{
+  	min-width: 50px; 
+}

@@ -13,6 +13,25 @@ function loadData() {
       sizesListByGroup = obj.sizeList;
     }
   });
+
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: './getBuyerPOItems',
+    data: {
+      buyerPoNo : "0"
+    },
+    success: function (data) {
+      if (data.result == "Something Wrong") {
+        dangerAlert("Something went wrong");
+      } else if (data.result == "duplicate") {
+        dangerAlert("Duplicate Item Name..This Item Name Already Exist")
+      } else {
+         drawItemTable(data.itemList);
+      }
+    }
+  });
+
 }
 
 window.onload = loadData;
@@ -23,16 +42,16 @@ function buyerWiseStyleLoad() {
     type: 'GET',
     dataType: 'json',
     url: './getBuyerWiseStylesItem',
-    data:{
-      buyerId : buyerId
+    data: {
+      buyerId: buyerId
     },
-    success: function(data){
-      
+    success: function (data) {
+
       var styleList = data.styleList;
       var options = "<option id='styleNo' value='0' selected>Select Style</option>";
       var length = styleList.length;
-      for(var i=0;i<length;i++) {
-          options += "<option id='styleNo' value='"+styleList[i].styleId+"'>"+styleList[i].styleNo+"</option>";
+      for (var i = 0; i < length; i++) {
+        options += "<option id='styleNo' value='" + styleList[i].styleId + "'>" + styleList[i].styleNo + "</option>";
       };
       document.getElementById("styleNo").innerHTML = options;
       $('.selectpicker').selectpicker('refresh');
@@ -48,16 +67,16 @@ function styleWiseItemLoad() {
     type: 'GET',
     dataType: 'json',
     url: './getStyleWiseItem',
-    data:{
-      styleId : styleId
+    data: {
+      styleId: styleId
     },
-    success: function(data){
-      
+    success: function (data) {
+
       var itemList = data.itemList;
       var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
       var length = itemList.length;
-      for(var i=0;i<length;i++) {
-          options += "<option id='itemType' value='"+itemList[i].itemId+"'>"+itemList[i].itemName+"</option>";
+      for (var i = 0; i < length; i++) {
+        options += "<option id='itemType' value='" + itemList[i].itemId + "'>" + itemList[i].itemName + "</option>";
       };
       document.getElementById("itemType").innerHTML = options;
       $('.selectpicker').selectpicker('refresh');
@@ -66,80 +85,152 @@ function styleWiseItemLoad() {
   });
 }
 
-function itemSizeAdd(){
-    var buyerId = $("#buyerName").val();
-    var styleId = $("#styleNo").val();
-    var itemId = $("#itemType").val();
-    var factoryId = $("#factory").val();
-    var colorId = $("#color").val();
-    var sizeGroup = $("#sizeGroup").val();
+function itemSizeAdd() {
 
-    if(buyerId != 0){
-      if(styleId != 0){
-        if(itemId != 0){
-          if(factoryId != 0){
-            if(colorId != 0){
-              if(sizeGroup != 0){
+  var buyerPOId = $("#buyerPOId").val();
+  var buyerId = $("#buyerName").val();
+  var styleId = $("#styleNo").val();
+  var itemId = $("#itemType").val();
+  var factoryId = $("#factory").val();
+  var colorId = $("#color").val();
+  var sizeGroupId = $("#sizeGroup").val();
+  var customerOrder = $("#customerOrder").val();
+  var purchaseOrder = $("#purchaseOrder").val();
+  var shippingMark = $("#shippingMark").val();
+  var userId = $("#userId").val();
+  var totalUnit = 0;
 
-              }else{
-                warningAlert("Size Group not selected ... Please Select Size group");
-                $("#sizeGroup").focus();
+
+  if (buyerId != 0) {
+    if (styleId != 0) {
+      if (itemId != 0) {
+        if (factoryId != 0) {
+          if (colorId != 0) {
+            if (sizeGroupId != 0) {
+              var sizeListLength = $(".sizeValue").length;
+              var sizeList = "";
+              for (var i = 0; i < sizeListLength; i++) {
+                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
+                var id = $("#sizeId" + i).val().trim();
+                sizeList += "id=" + id + ",quantity=" + quantity + " ";
+                totalUnit += Number(quantity);
               }
-            }else{
-              warningAlert("Color Not Selected... Please Select Color");
-              $("#color").focus();
+
+
+              $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: './addItemToBuyerPO',
+                data: {
+                  autoId: "0",
+                  buyerPOId: buyerPOId,
+                  buyerId: buyerId,
+                  styleId: styleId,
+                  itemId: itemId,
+                  factoryId: factoryId,
+                  colorId: colorId,
+                  customerOrder: customerOrder,
+                  purchaseOrder: purchaseOrder,
+                  shippingMark: shippingMark,
+                  sizeGroupId: sizeGroupId,
+                  sizeListString: sizeList,
+                  totalUnit: totalUnit,
+                  unitCmt: 1,
+                  totalPrice: 0,
+                  unitFob: 1,
+                  totalAmount: 1,
+                  userId: userId
+                },
+                success: function (data) {
+                  if (data.result == "Something Wrong") {
+                    dangerAlert("Something went wrong");
+                  } else if (data.result == "duplicate") {
+                    dangerAlert("Duplicate Item Name..This Item Name Allreary Exist")
+                  } else {
+
+                    console.log(data.itemList);
+                    drawItemTable(data.itemList);
+                  }
+                }
+              });
+
+            } else {
+              warningAlert("Size Group not selected ... Please Select Size group");
+              $("#sizeGroup").focus();
             }
-          }else{
-            warningAlert("Factory not selected... Please Select Factory Name");
-            $("#factoryId").focus();
+          } else {
+            warningAlert("Color Not Selected... Please Select Color");
+            $("#color").focus();
           }
-        }else{
-          warningAlert("Item Type not selected... Please Select Item Type");
-          $("#itemType").focus();
+        } else {
+          warningAlert("Factory not selected... Please Select Factory Name");
+          $("#factoryId").focus();
         }
-      }else{
-        warningAlert("Style No not selected... Please Select Style No");
-        $("#styleNo").focus();
+      } else {
+        warningAlert("Item Type not selected... Please Select Item Type");
+        $("#itemType").focus();
       }
-    }else{
-      warningAlert("Buyer Name not selecte... Please Select Buyer Name");
-      $("#buyerName").focus();
+    } else {
+      warningAlert("Style No not selected... Please Select Style No");
+      $("#styleNo").focus();
     }
-    
+  } else {
+    warningAlert("Buyer Name not selected... Please Select Buyer Name");
+    $("#buyerName").focus();
+  }
+
 }
 
-function saveAction() {
-  var unitName = $("#unitName").val().trim();
-  var unitValue = $("#unitValue").val().trim();
+
+
+function submitAction() {
+  var buyerId = $("#buyerName").val();
+  var paymentTerm = $("#paymentTerm").val();
+  var currency = $("#currency").val();
+  var totalUnit = 0;
+  var unitCmt = 0;
+  var totalPrice = 0;
+  var unitFob = 0;
+  var totalAmount = 0;
+  var note = $("#note").val();
+  var remarks = $("#remarks").val();
   var userId = $("#userId").val();
 
-  if (unitName != '') {
+
+
+  if (buyerId != 0) {
+    
     $.ajax({
       type: 'POST',
       dataType: 'json',
-      url: './saveUnit',
+      url: './submitBuyerPO',
       data: {
-        unitId: "0",
-        unitName: unitName,
-        unitValue: unitValue,
+        buyerPoId: "0",
+        buyerId: buyerId,
+        paymentTerm: paymentTerm,
+        currency: currency,
+        totalUnit: totalUnit,
+        unitCmt: unitCmt,
+        totalPrice: totalPrice,
+        unitFob: unitFob,
+        totalAmount: totalAmount,
+        note: note,
+        remarks: remarks,
         userId: userId
       },
       success: function (data) {
         if (data.result == "Something Wrong") {
           dangerAlert("Something went wrong");
         } else if (data.result == "duplicate") {
-          dangerAlert("Duplicate Unit Name..This Unit Name Allreary Exist")
+          dangerAlert("Duplicate Buyer Name..This Unit Name Already Exist")
         } else {
-          successAlert("Unit Name Save Successfully");
-
-          $("#dataList").empty();
-          $("#dataList").append(drawDataTable(data.result));
-
+          successAlert("Buyer Purchase Order Save Successfully");
         }
       }
     });
   } else {
-    warningAlert("Empty Unit Name... Please Enter Unit Name");
+    warningAlert("Buyer Name not selected... Please Select Buyer Name");
+    $("#buyerName").focus();
   }
 }
 
@@ -180,7 +271,37 @@ function editAction() {
   }
 }
 
-function reset(){
+function searchBuyerPO(buyerPoNo){
+  
+    $.ajax({
+      type: 'GET',
+      dataType: 'json',
+      url: './getBuyerPO',
+      data: {
+        buyerPoNo : buyerPoNo
+      },
+      success: function (data) {
+        if (data.result == "Something Wrong") {
+          dangerAlert("Something went wrong");
+        } else if (data.result == "duplicate") {
+          dangerAlert("Duplicate Unit Name..This Unit Name Allreary Exist")
+        } else {
+            console.log(data.buyerPO);
+            var buyerPo = data.buyerPO;
+            $("#buyerName").val(buyerPo.buyerId).change();
+            $("#paymentTerm").val(buyerPo.paymentTerm).change();
+            $("#currency").val(buyerPo.currency).change();
+            $("#note").val(buyerPo.note);
+            $("#remarks").val(buyerPo.remarks);
+
+            drawItemTable(buyerPo.itemList);
+            $('.modal').modal('hide')
+        }
+      }
+    });
+}
+
+function reset() {
   var element = $(".alert");
   element.hide();
   $("#sizeGroup").val("0").change();
@@ -206,7 +327,8 @@ function sizeLoadByGroup() {
   if (groupId != "0") {
     var length = sizesListByGroup['groupId' + groupId].length;
     for (var i = 0; i < length; i++) {
-      child += " <div class=\"list-group-item pt-0 pb-0\"> <div class=\"form-group row mb-0\"><label for=\"sizeId" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" class=\"col-md-6 col-form-label-sm pb-0 mb-0\" style=\"height:25px;\">" + sizesListByGroup['groupId' + groupId][i].sizeName + "</label><input type=\"number\" class=\"form-control-sm col-md-6\" id=\"sizeId" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" style=\"height:25px;\"></div></div>";
+      //child += " <div class=\"list-group-item pt-0 pb-0 sizeNameList\"> <div class=\"form-group row mb-0\"><label for=\"sizeId" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" class=\"col-md-6 col-form-label-sm pb-0 mb-0\" style=\"height:25px;\">" + sizesListByGroup['groupId' + groupId][i].sizeName + "</label><input type=\"number\" class=\"form-control-sm col-md-6\" id=\"sizeValue" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" style=\"height:25px;\"></div></div>";
+      child += " <div class=\"list-group-item pt-0 pb-0\"> <div class=\"form-group row mb-0\"><label for=\"sizeValue" + i + "\" class=\"col-md-6 col-form-label-sm pb-0 mb-0\" style=\"height:25px;\">" + sizesListByGroup['groupId' + groupId][i].sizeName + "</label><input type=\"number\" class=\"form-control-sm col-md-6 sizeValue\" id=\"sizeValue" + i + "\" style=\"height:25px;\"> <input type=\"hidden\" id=\"sizeId" + i + "\" value=" + sizesListByGroup['groupId' + groupId][i].sizeId + "></div></div>";
     }
   }
   listGroup.innerHTML = child;
@@ -220,6 +342,61 @@ function setData(unitId) {
   document.getElementById("btnSave").disabled = true;
   document.getElementById("btnEdit").disabled = false;
 
+}
+
+function drawItemTable(dataList){
+  var length = dataList.length;   
+        sizeGroupId = "";
+        var tables = "";
+        var isClosingNeed = false;
+        for (var i = 0; i < length; i++) {
+          var item = dataList[i];
+          console.log(item);
+          if (sizeGroupId != item.sizeGroupId) {
+            if(isClosingNeed){
+              tables += "</tbody></table> </div></div>";
+            }
+            sizeGroupId = item.sizeGroupId;
+            tables += `<div class="row">
+                        <div class="col-md-12 table-responsive" >
+              <table class="table table-hover table-bordered table-sm mb-0 min-width-100">
+              <thead class="no-wrap-text bg-light">
+                <tr>
+                  <th scope="col">Style</th>
+                  <th scope="col">Item Name</th>
+                  <th scope="col">Color</th>
+                  <th scope="col">Customer Order</th>
+                  <th scope="col">Purchase Order</th>
+                  <th scope="col">Shipping Mark</th>
+                  <th scope="col">Sizes Reg-Tall-N/A</th>`
+                  var sizeListLength = sizesListByGroup['groupId' + sizeGroupId].length;
+                  for (var j = 0; j < sizeListLength; j++) {
+                    tables += "<th class=\"min-width-100 mx-auto\"scope=\"col\">"+sizesListByGroup['groupId' + sizeGroupId][j].sizeName+"</th>";
+                  }
+                  tables+=`<th scope="col">Total Units</th>
+                  <th scope="col">Unit CMT</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Unit FOB</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col"><i class="fa fa-edit"></i></th>
+                  <th scope="col"><i class="fa fa-trash"></i></th>
+                </tr>
+              </thead>
+              <tbody id="dataList">`
+              isClosingNeed = true;
+          }
+          tables += "<tr><td>"+item.styleId+"</td><td>"+item.itemId+"</td><td>"+item.colorId+"</td><td>"+item.customerOrder+"</td><td>"+item.purchaseOrder+"</td><td>"+item.shippingMark+"</td><td>"+item.sizeReg+"</td>"
+              var sizeList = item.sizeList;
+              var sizeListLength = sizeList.length;
+              for(var j=0;j<sizeListLength;j++){
+                tables += "<td>"+sizeList[j].sizeQuantity+"</td>"
+              }
+          tables += "<td class='totalUnit' id='totalUnit"+item.autoId+"'>"+item.totalUnit+"</td><td class='unitCmt' id='unitCmt"+item.autoId+"'>"+item.unitCmt+"</td><td class='totalPrice' id='totalPrice"+item.autoId+"'>"+item.totalPrice+"</td><td class='unitFob' id='unitFob"+item.autoId+"'>"+item.unitFob+"</td><td class='totalAmount' id='totalAmount"+item.autoId+"'>"+item.totalAmount+"</td><td><i class='fa fa-edit' onclick='setData()'> </i></td><td><i class='fa fa-trash' onclick='setData()'> </i></td></tr>";
+
+        }
+        tables += "</tbody></table> </div></div>";
+
+        document.getElementById("tableList").innerHTML = tables;
 }
 
 function drawDataTable(data) {
@@ -275,7 +452,7 @@ $(document).ready(function () {
 $(document).ready(function () {
   $("#search").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#dataList tr").filter(function () {
+    $("#poList tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });

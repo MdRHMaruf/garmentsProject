@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pg.dao.OrderDAO;
+import pg.orderModel.BuyerPO;
+import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Style;
 import pg.registerModel.ItemDescription;
 import pg.registerModel.StyleItem;
@@ -32,6 +34,36 @@ public class OrderServiceImpl implements OrderService{
 	public List<ItemDescription> getStyleWiseItem(String styleId) {
 		// TODO Auto-generated method stub
 		return orderDAO.getStyleWiseItem(styleId);
+	}
+
+	@Override
+	public boolean addBuyerPoItem(BuyerPoItem buyerPoItem) {
+		// TODO Auto-generated method stub
+		return orderDAO.addBuyerPoItem(buyerPoItem);
+	}
+
+	@Override
+	public List<BuyerPoItem> getBuyerPOItemList(String buyerPOId) {
+		// TODO Auto-generated method stub
+		return orderDAO.getBuyerPOItemList(buyerPOId);
+	}
+
+	@Override
+	public boolean submitBuyerPO(BuyerPO buyerPo) {
+		// TODO Auto-generated method stub
+		return orderDAO.submitBuyerPO(buyerPo);
+	}
+
+	@Override
+	public List<BuyerPO> getBuyerPoList() {
+		// TODO Auto-generated method stub
+		return orderDAO.getBuyerPoList();
+	}
+
+	@Override
+	public BuyerPO getBuyerPO(String buyerPoNo) {
+		// TODO Auto-generated method stub
+		return orderDAO.getBuyerPO(buyerPoNo);
 	}
 
 }

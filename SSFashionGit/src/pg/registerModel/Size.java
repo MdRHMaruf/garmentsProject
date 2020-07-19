@@ -8,7 +8,14 @@ public class Size {
 	String sizeSorting;
 	String userId;
 	
+	String sizeQuantity;
+	
 	public Size() {}
+	
+	public Size(String sizeId,String sizeQuantity) {
+		this.sizeId = sizeId;
+		this.sizeQuantity = sizeQuantity;
+	}
 	
 	public Size(String sizeId, String groupId,String groupName, String sizeName, String sizeSorting, String userId) {
 		super();
@@ -25,6 +32,16 @@ public class Size {
 	public void setSizeId(String sizeId) {
 		this.sizeId = sizeId;
 	}
+	
+
+	public String getSizeQuantity() {
+		return sizeQuantity;
+	}
+
+	public void setSizeQuantity(String sizeQuantity) {
+		this.sizeQuantity = sizeQuantity;
+	}
+
 	public String getGroupId() {
 		return groupId;
 	}

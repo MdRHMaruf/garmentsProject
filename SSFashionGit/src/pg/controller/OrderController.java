@@ -1,5 +1,6 @@
 package pg.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -9,11 +10,17 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import pg.orderModel.BuyerPO;
+import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Style;
 import pg.registerModel.Brand;
 import pg.registerModel.BuyerModel;
@@ -29,6 +36,7 @@ import pg.services.OrderService;
 import pg.services.RegisterService;
 
 @Controller
+@RestController
 public class OrderController {
 
 	@Autowired
@@ -101,10 +109,12 @@ public class OrderController {
 		List<BuyerModel> buyerList= registerService.getAllBuyers();
 		List<FactoryModel> factoryList = registerService.getAllFactories();
 		List<Color> colorList = registerService.getColorList();
+		List<BuyerPO> buyerPoList = orderService.getBuyerPoList();
 		view.addObject("groupList",groupList);
 		view.addObject("buyerList",buyerList);
 		view.addObject("factoryList",factoryList);
 		view.addObject("colorList",colorList);
+		view.addObject("buyerPoList",buyerPoList);
 		return view; //JSP - /WEB-INF/view/index.jsp
 	}
 
@@ -159,6 +169,58 @@ public class OrderController {
 		return objMain; 
 	}
 	
-
 	
+	
+	@RequestMapping(value = "/addItemToBuyerPO",method=RequestMethod.POST)
+	public @ResponseBody JSONObject addItemToBuyerPO(BuyerPoItem buyerPoItem) {
+		JSONObject objmain = new JSONObject();
+		
+		if(orderService.addBuyerPoItem(buyerPoItem)) {
+			JSONArray mainArray = new JSONArray();
+			List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoItem.getBuyerPOId());
+			objmain.put("itemList",buyerPOItemList);
+		}else {
+			objmain.put("result", "Something Wrong");
+		}
+		
+		return objmain;
+	}
+	
+	@RequestMapping(value = "/getBuyerPOItems",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getBuyerPOItems(String buyerPoNo) {
+		JSONObject objmain = new JSONObject();
+		
+		
+		JSONArray mainArray = new JSONArray();
+		List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoNo);
+		objmain.put("itemList",buyerPOItemList);
+		
+		return objmain;
+	}
+	
+	@RequestMapping(value = "/getBuyerPO",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getBuyerPO(String buyerPoNo) {
+		JSONObject objmain = new JSONObject();
+		
+		
+		JSONArray mainArray = new JSONArray();
+		BuyerPO buyerPo = orderService.getBuyerPO(buyerPoNo);
+		
+		objmain.put("buyerPO",buyerPo);
+		
+		return objmain;
+	}
+
+	@RequestMapping(value = "/submitBuyerPO",method=RequestMethod.POST)
+	public @ResponseBody JSONObject submitBuyerPO(BuyerPO buyerPO) {
+		JSONObject objmain = new JSONObject();
+		
+		if(orderService.submitBuyerPO(buyerPO)) {
+			objmain.put("result", "Successfull");
+		}else {
+			objmain.put("result", "Something Wrong");
+		}
+		
+		return objmain;
+	}
 }
