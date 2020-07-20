@@ -1,5 +1,6 @@
-
-
+var styleIdForSet = 0;
+var itemIdForSet = 0;
+var sizeValueListForSet = [];
 var sizesListByGroup = JSON;
 function loadData() {
 
@@ -17,9 +18,9 @@ function loadData() {
   $.ajax({
     type: 'GET',
     dataType: 'json',
-    url: './getBuyerPOItems',
+    url: './getBuyerPOItemsList',
     data: {
-      buyerPoNo : "0"
+      buyerPoNo: "0"
     },
     success: function (data) {
       if (data.result == "Something Wrong") {
@@ -27,7 +28,7 @@ function loadData() {
       } else if (data.result == "duplicate") {
         dangerAlert("Duplicate Item Name..This Item Name Already Exist")
       } else {
-         drawItemTable(data.itemList);
+        drawItemTable(data.itemList);
       }
     }
   });
@@ -38,51 +39,72 @@ window.onload = loadData;
 
 function buyerWiseStyleLoad() {
   var buyerId = $("#buyerName").val();
-  $.ajax({
-    type: 'GET',
-    dataType: 'json',
-    url: './getBuyerWiseStylesItem',
-    data: {
-      buyerId: buyerId
-    },
-    success: function (data) {
 
-      var styleList = data.styleList;
-      var options = "<option id='styleNo' value='0' selected>Select Style</option>";
-      var length = styleList.length;
-      for (var i = 0; i < length; i++) {
-        options += "<option id='styleNo' value='" + styleList[i].styleId + "'>" + styleList[i].styleNo + "</option>";
-      };
-      document.getElementById("styleNo").innerHTML = options;
-      $('.selectpicker').selectpicker('refresh');
-      $('#styleNo').val("0").change();
-      $('#itemType').val("0").change();
-    }
-  });
+  if(buyerId != 0){
+    $.ajax({
+      type: 'GET',
+      dataType: 'json',
+      url: './getBuyerWiseStylesItem',
+      data: {
+        buyerId: buyerId
+      },
+      success: function (data) {
+  
+        var styleList = data.styleList;
+        var options = "<option id='styleNo' value='0' selected>Select Style</option>";
+        var length = styleList.length;
+        for (var i = 0; i < length; i++) {
+          options += "<option id='styleNo' value='" + styleList[i].styleId + "'>" + styleList[i].styleNo + "</option>";
+        };
+        $("#styleNo").html(options);
+        $('.selectpicker').selectpicker('refresh');
+        $('#styleNo').val(styleIdForSet).change();
+        styleIdForSet = 0;
+        
+      }
+    });
+  }else{
+    var options = "<option id='styleNo' value='0' selected>Select Style</option>";
+    $("#styleNo").html(options);
+    $('#styleNo').selectpicker('refresh');
+    $('#styleNo').val("0").change();
+  }
+  
 }
 
 function styleWiseItemLoad() {
   var styleId = $("#styleNo").val();
-  $.ajax({
-    type: 'GET',
-    dataType: 'json',
-    url: './getStyleWiseItem',
-    data: {
-      styleId: styleId
-    },
-    success: function (data) {
 
-      var itemList = data.itemList;
-      var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
-      var length = itemList.length;
-      for (var i = 0; i < length; i++) {
-        options += "<option id='itemType' value='" + itemList[i].itemId + "'>" + itemList[i].itemName + "</option>";
-      };
-      document.getElementById("itemType").innerHTML = options;
-      $('.selectpicker').selectpicker('refresh');
-      $('#itemType').val("0").change();
-    }
-  });
+  if(styleId != 0){
+    $.ajax({
+      type: 'GET',
+      dataType: 'json',
+      url: './getStyleWiseItem',
+      data: {
+        styleId: styleId
+      },
+      success: function (data) {
+  
+        var itemList = data.itemList;
+        var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
+        var length = itemList.length;
+        for (var i = 0; i < length; i++) {
+          options += "<option id='itemType' value='" + itemList[i].itemId + "'>" + itemList[i].itemName + "</option>";
+        };
+        document.getElementById("itemType").innerHTML = options;
+        $('.selectpicker').selectpicker('refresh');
+        $('#itemType').val(itemIdForSet).change();
+        itemIdForSet = 0;
+      }
+    });
+  }else{
+    var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
+    $("#itemType").html(options);
+    $('#itemType').selectpicker('refresh');
+    $('#itemType').val(itemIdForSet).change();
+    itemIdForSet = 0;
+  }
+  
 }
 
 function itemSizeAdd() {
@@ -136,7 +158,7 @@ function itemSizeAdd() {
                   sizeListString: sizeList,
                   totalUnit: totalUnit,
                   unitCmt: 1,
-                  totalPrice: 0,
+                  totalPrice: 1,
                   unitFob: 1,
                   totalAmount: 1,
                   userId: userId
@@ -145,10 +167,8 @@ function itemSizeAdd() {
                   if (data.result == "Something Wrong") {
                     dangerAlert("Something went wrong");
                   } else if (data.result == "duplicate") {
-                    dangerAlert("Duplicate Item Name..This Item Name Allreary Exist")
+                    dangerAlert("Duplicate Item Name..This Item Name Already Exist")
                   } else {
-
-                    console.log(data.itemList);
                     drawItemTable(data.itemList);
                   }
                 }
@@ -181,17 +201,124 @@ function itemSizeAdd() {
 
 }
 
+function itemSizeEdit() {
 
+  var buyerPOId = $("#buyerPOId").val();
+  var itemAutoId = $("#itemAutoId").val();
+  var buyerId = $("#buyerName").val();
+  var styleId = $("#styleNo").val();
+  var itemId = $("#itemType").val();
+  var factoryId = $("#factory").val();
+  var colorId = $("#color").val();
+  var sizeGroupId = $("#sizeGroup").val();
+  var customerOrder = $("#customerOrder").val();
+  var purchaseOrder = $("#purchaseOrder").val();
+  var shippingMark = $("#shippingMark").val();
+  var userId = $("#userId").val();
+  var totalUnit = 0;
+
+
+  if (buyerId != 0) {
+    if (styleId != 0) {
+      if (itemId != 0) {
+        if (factoryId != 0) {
+          if (colorId != 0) {
+            if (sizeGroupId != 0) {
+              var sizeListLength = $(".sizeValue").length;
+              var sizeList = "";
+              for (var i = 0; i < sizeListLength; i++) {
+                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
+                var id = $("#sizeId" + i).val().trim();
+                sizeList += "id=" + id + ",quantity=" + quantity + " ";
+                totalUnit += Number(quantity);
+              }
+
+
+              $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: './editBuyerPoItem',
+                data: {
+                  autoId: itemAutoId,
+                  buyerPOId: buyerPOId,
+                  buyerId: buyerId,
+                  styleId: styleId,
+                  itemId: itemId,
+                  factoryId: factoryId,
+                  colorId: colorId,
+                  customerOrder: customerOrder,
+                  purchaseOrder: purchaseOrder,
+                  shippingMark: shippingMark,
+                  sizeGroupId: sizeGroupId,
+                  sizeListString: sizeList,
+                  totalUnit: totalUnit,
+                  unitCmt: 1,
+                  totalPrice: 1,
+                  unitFob: 1,
+                  totalAmount: 1,
+                  userId: userId
+                },
+                success: function (data) {
+                  if (data.result == "Something Wrong") {
+                    dangerAlert("Something went wrong");
+                  } else if (data.result == "duplicate") {
+                    dangerAlert("Duplicate Item Name..This Item Name Already Exist")
+                  } else {
+                    drawItemTable(data.itemList);
+                  }
+                }
+              });
+
+            } else {
+              warningAlert("Size Group not selected ... Please Select Size group");
+              $("#sizeGroup").focus();
+            }
+          } else {
+            warningAlert("Color Not Selected... Please Select Color");
+            $("#color").focus();
+          }
+        } else {
+          warningAlert("Factory not selected... Please Select Factory Name");
+          $("#factoryId").focus();
+        }
+      } else {
+        warningAlert("Item Type not selected... Please Select Item Type");
+        $("#itemType").focus();
+      }
+    } else {
+      warningAlert("Style No not selected... Please Select Style No");
+      $("#styleNo").focus();
+    }
+  } else {
+    warningAlert("Buyer Name not selected... Please Select Buyer Name");
+    $("#buyerName").focus();
+  }
+
+}
 
 function submitAction() {
+  var buyerPoId = $("#buyerPOId").val();
   var buyerId = $("#buyerName").val();
   var paymentTerm = $("#paymentTerm").val();
   var currency = $("#currency").val();
+
+  var totalRow = $(".totalUnit");
+
   var totalUnit = 0;
   var unitCmt = 0;
   var totalPrice = 0;
   var unitFob = 0;
   var totalAmount = 0;
+
+  for(var i = 0;i<totalRow.length;i++){
+      var autoId =  $('#itemRow'+i).data('id');
+      totalUnit += Number($("#totalUnit"+autoId).text());
+      unitCmt += Number($("#unitCmt"+autoId).text());
+      totalPrice += Number($("#totalPrice"+autoId).text());
+      unitFob += Number($("#unitFob"+autoId).text());
+      totalAmount += Number($("#totalAmount"+autoId).text());
+  }
+
   var note = $("#note").val();
   var remarks = $("#remarks").val();
   var userId = $("#userId").val();
@@ -199,13 +326,13 @@ function submitAction() {
 
 
   if (buyerId != 0) {
-    
+
     $.ajax({
       type: 'POST',
       dataType: 'json',
       url: './submitBuyerPO',
       data: {
-        buyerPoId: "0",
+        buyerPoId: buyerPoId,
         buyerId: buyerId,
         paymentTerm: paymentTerm,
         currency: currency,
@@ -235,76 +362,188 @@ function submitAction() {
 }
 
 
-function editAction() {
-  var unitId = $("#unitId").val();
-  var unitName = $("#unitName").val().trim();
-  var unitValue = $("#unitValue").val().trim();
-  var userId = $("#userId").val();
+function buyerPoEditAction() {
 
-  if (unitName != '') {
-    $.ajax({
-      type: 'POST',
-      dataType: 'json',
-      url: './editUnit',
-      data: {
-        unitId: unitId,
-        unitName: unitName,
-        unitValue: unitValue,
-        userId: userId
-      },
-      success: function (data) {
-        if (data.result == "Something Wrong") {
-          dangerAlert("Something went wrong");
-        } else if (data.result == "duplicate") {
-          dangerAlert("Duplicate Unit Name..This Unit Name Allreary Exist")
-        } else {
-          successAlert("Unit Name Edit Successfully");
+  var buyerPoId = $("#buyerPOId").val();
+  var buyerId = $("#buyerName").val();
+  var paymentTerm = $("#paymentTerm").val();
+  var currency = $("#currency").val();
+  var totalRow = $(".totalUnit");
 
-          $("#dataList").empty();
-          $("#dataList").append(drawDataTable(data.result));
-
-        }
-      }
-    });
-  } else {
-    warningAlert("Empty Unit Name... Please Enter Unit Name");
-  }
+  var totalUnit = 0;
+  var unitCmt = 0;
+  var totalPrice = 0;
+  var unitFob = 0;
+  var totalAmount = 0;
+  for(var i = 0;i<totalRow.length;i++){
+    var autoId =  $('#itemRow'+i).data('id');
+    totalUnit += Number($("#totalUnit"+autoId).text());
+    unitCmt += Number($("#unitCmt"+autoId).text());
+    totalPrice += Number($("#totalPrice"+autoId).text());
+    unitFob += Number($("#unitFob"+autoId).text());
+    totalAmount += Number($("#totalAmount"+autoId).text());
 }
 
-function searchBuyerPO(buyerPoNo){
+  var note = $("#note").val();
+  var remarks = $("#remarks").val();
+  var userId = $("#userId").val();
+
+  if (buyerPoId != "0") {
+    if (buyerId != 0) {
+
+      $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: './editBuyerPO',
+        data: {
+          buyerPoId: buyerPoId,
+          buyerId: buyerId,
+          paymentTerm: paymentTerm,
+          currency: currency,
+          totalUnit: totalUnit,
+          unitCmt: unitCmt,
+          totalPrice: totalPrice,
+          unitFob: unitFob,
+          totalAmount: totalAmount,
+          note: note,
+          remarks: remarks,
+          userId: userId
+        },
+        success: function (data) {
+          if (data.result == "Something Wrong") {
+            dangerAlert("Something went wrong");
+          } else if (data.result == "duplicate") {
+            dangerAlert("Duplicate Buyer Name..This Unit Name Already Exist")
+          } else {
+            successAlert("Buyer Purchase Order Edit Successfully");
+          }
+        }
+      });
+    } else {
+      warningAlert("Buyer Name not selected... Please Select Buyer Name");
+      $("#buyerName").focus();
+    }
+  } else {
+    warningAlert("Something Wrong... Buyer Purchase Order Id not found");
+    $("#buyerName").focus();
+  }
+
+}
+
+function searchBuyerPO(buyerPoNo) {
+
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: './getBuyerPO',
+    data: {
+      buyerPoNo: buyerPoNo
+    },
+    success: function (data) {
+      if (data.result == "Something Wrong") {
+        dangerAlert("Something went wrong");
+      } else if (data.result == "duplicate") {
+        dangerAlert("Duplicate Unit Name..This Unit Name Already Exist")
+      } else {
+        
+        var buyerPo = data.buyerPO;
+        $("#buyerPOId").val(buyerPo.buyerPoId);
+        $("#buyerName").val(buyerPo.buyerId).change();
+        $("#paymentTerm").val(buyerPo.paymentTerm).change();
+        $("#currency").val(buyerPo.currency).change();
+        $("#note").val(buyerPo.note);
+        $("#remarks").val(buyerPo.remarks);
+
+        drawItemTable(buyerPo.itemList);
+        $('.modal').modal('hide')
+        $("#btnPOSubmit").prop("disabled", true);
+        $("#btnPOEdit").prop("disabled", false);
+        $("#btnPreview").prop("disabled", false);
+      }
+    }
+  });
+}
+
+function setBuyerPoItemDataForEdit(itemAutoId) {
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: './getBuyerPOItem',
+    data: {
+      itemAutoId: itemAutoId
+    },
+    success: function (data) {
+      if (data.result == "Something Wrong") {
+        dangerAlert("Something went wrong");
+      } else if (data.result == "duplicate") {
+        dangerAlert("Duplicate Unit Name..This Unit Name Already Exist")
+      } else {
+        
+        var item = data.poItem;
+        console.log(item);
+        $("#itemAutoId").val(item.autoId);
+        $("#customerOrder").val(item.customerOrder);
+        $("#purchaseOrder").val(item.purchaseOrder);
+        $("#shippingMark").val(item.shippingMark);
+        $("#factory").val(item.factoryId).change();
+        $("#color").val(item.colorId).change();
+
+        sizeValueListForSet = item.sizeList;
+        $("#sizeGroup").val(item.sizeGroupId).change();
+
+        $("#itemAutoId").val(itemAutoId);
+        $("#btnAdd").prop("disabled", true);
+        $("#btnEdit").prop("disabled", false);
+
+        styleIdForSet = item.styleId;
+        itemIdForSet = item.itemId;
+        $("#buyerName").val(item.buyerId).change();
+
+        
+      }
+    }
+  });
   
+}
+
+function deleteBuyerPoItem(itemAutoId) {
+
+  var buyerPoId = $("#buyerPOId").val();
+  if (confirm("Are you sure to Delete this item")) {
     $.ajax({
       type: 'GET',
       dataType: 'json',
-      url: './getBuyerPO',
+      url: './deleteBuyerPoItem',
       data: {
-        buyerPoNo : buyerPoNo
+        buyerPoId: buyerPoId,
+        itemAutoId: itemAutoId
+
       },
       success: function (data) {
-        if (data.result == "Something Wrong") {
+        if (data.itemList == "Something Wrong") {
           dangerAlert("Something went wrong");
         } else if (data.result == "duplicate") {
-          dangerAlert("Duplicate Unit Name..This Unit Name Allreary Exist")
+          dangerAlert("Duplicate Unit Name..This Unit Name Already Exist")
         } else {
-            console.log(data.buyerPO);
-            var buyerPo = data.buyerPO;
-            $("#buyerName").val(buyerPo.buyerId).change();
-            $("#paymentTerm").val(buyerPo.paymentTerm).change();
-            $("#currency").val(buyerPo.currency).change();
-            $("#note").val(buyerPo.note);
-            $("#remarks").val(buyerPo.remarks);
-
-            drawItemTable(buyerPo.itemList);
-            $('.modal').modal('hide')
+          drawItemTable(data.itemList);
+          $('.modal').modal('hide')
+          $("#btnPOSubmit").prop("disabled", true);
+          $("#btnPOEdit").prop("disabled", false);
+          $("#btnPreview").prop("disabled", false);
         }
       }
     });
+  }
+
 }
 
 function reset() {
   var element = $(".alert");
   element.hide();
   $("#sizeGroup").val("0").change();
+  $("#itemAutoId").val("0");
+  $("#btnAdd").prop("disabled", false);
+  $("#btnEdit").prop("disabled", true);
 }
 
 function refreshAction() {
@@ -321,17 +560,24 @@ function refreshAction() {
 function sizeLoadByGroup() {
 
   var groupId = $("#sizeGroup").val().trim();
-
-  var listGroup = document.getElementById("listGroup");
   var child = "";
+  var length = 0;
   if (groupId != "0") {
-    var length = sizesListByGroup['groupId' + groupId].length;
+    length = sizesListByGroup['groupId' + groupId].length;
     for (var i = 0; i < length; i++) {
       //child += " <div class=\"list-group-item pt-0 pb-0 sizeNameList\"> <div class=\"form-group row mb-0\"><label for=\"sizeId" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" class=\"col-md-6 col-form-label-sm pb-0 mb-0\" style=\"height:25px;\">" + sizesListByGroup['groupId' + groupId][i].sizeName + "</label><input type=\"number\" class=\"form-control-sm col-md-6\" id=\"sizeValue" + sizesListByGroup['groupId' + groupId][i].sizeId + "\" style=\"height:25px;\"></div></div>";
       child += " <div class=\"list-group-item pt-0 pb-0\"> <div class=\"form-group row mb-0\"><label for=\"sizeValue" + i + "\" class=\"col-md-6 col-form-label-sm pb-0 mb-0\" style=\"height:25px;\">" + sizesListByGroup['groupId' + groupId][i].sizeName + "</label><input type=\"number\" class=\"form-control-sm col-md-6 sizeValue\" id=\"sizeValue" + i + "\" style=\"height:25px;\"> <input type=\"hidden\" id=\"sizeId" + i + "\" value=" + sizesListByGroup['groupId' + groupId][i].sizeId + "></div></div>";
     }
+
   }
-  listGroup.innerHTML = child;
+  $("#listGroup").html(child);
+  if(sizeValueListForSet.length>0){
+    for(var i =0 ;i<length;i++){
+      $("#sizeValue"+i).val(sizeValueListForSet[i].sizeQuantity);
+    }
+    sizeValueListForSet = [];
+  }
+  
 }
 function setData(unitId) {
 
@@ -344,36 +590,36 @@ function setData(unitId) {
 
 }
 
-function drawItemTable(dataList){
-  var length = dataList.length;   
-        sizeGroupId = "";
-        var tables = "";
-        var isClosingNeed = false;
-        for (var i = 0; i < length; i++) {
-          var item = dataList[i];
-          console.log(item);
-          if (sizeGroupId != item.sizeGroupId) {
-            if(isClosingNeed){
-              tables += "</tbody></table> </div></div>";
-            }
-            sizeGroupId = item.sizeGroupId;
-            tables += `<div class="row">
+function drawItemTable(dataList) {
+  var length = dataList.length;
+  sizeGroupId = "";
+  var tables = "";
+  var isClosingNeed = false;
+  for (var i = 0; i < length; i++) {
+    var item = dataList[i];
+    
+    if (sizeGroupId != item.sizeGroupId) {
+      if (isClosingNeed) {
+        tables += "</tbody></table> </div></div>";
+      }
+      sizeGroupId = item.sizeGroupId;
+      tables += `<div class="row">
                         <div class="col-md-12 table-responsive" >
-              <table class="table table-hover table-bordered table-sm mb-0 min-width-100">
+              <table class="table table-hover table-bordered table-sm mb-0">
               <thead class="no-wrap-text bg-light">
                 <tr>
-                  <th scope="col">Style</th>
-                  <th scope="col">Item Name</th>
-                  <th scope="col">Color</th>
+                  <th scope="col" class="min-width-150">Style</th>
+                  <th scope="col" class="min-width-150">Item Name</th>
+                  <th scope="col" class="min-width-150">Color</th>
                   <th scope="col">Customer Order</th>
                   <th scope="col">Purchase Order</th>
                   <th scope="col">Shipping Mark</th>
                   <th scope="col">Sizes Reg-Tall-N/A</th>`
-                  var sizeListLength = sizesListByGroup['groupId' + sizeGroupId].length;
-                  for (var j = 0; j < sizeListLength; j++) {
-                    tables += "<th class=\"min-width-100 mx-auto\"scope=\"col\">"+sizesListByGroup['groupId' + sizeGroupId][j].sizeName+"</th>";
-                  }
-                  tables+=`<th scope="col">Total Units</th>
+      var sizeListLength = sizesListByGroup['groupId' + sizeGroupId].length;
+      for (var j = 0; j < sizeListLength; j++) {
+        tables += "<th class=\"min-width-60 mx-auto\"scope=\"col\">" + sizesListByGroup['groupId' + sizeGroupId][j].sizeName + "</th>";
+      }
+      tables += `<th scope="col">Total Units</th>
                   <th scope="col">Unit CMT</th>
                   <th scope="col">Total Price</th>
                   <th scope="col">Unit FOB</th>
@@ -383,20 +629,20 @@ function drawItemTable(dataList){
                 </tr>
               </thead>
               <tbody id="dataList">`
-              isClosingNeed = true;
-          }
-          tables += "<tr><td>"+item.styleId+"</td><td>"+item.itemId+"</td><td>"+item.colorId+"</td><td>"+item.customerOrder+"</td><td>"+item.purchaseOrder+"</td><td>"+item.shippingMark+"</td><td>"+item.sizeReg+"</td>"
-              var sizeList = item.sizeList;
-              var sizeListLength = sizeList.length;
-              for(var j=0;j<sizeListLength;j++){
-                tables += "<td>"+sizeList[j].sizeQuantity+"</td>"
-              }
-          tables += "<td class='totalUnit' id='totalUnit"+item.autoId+"'>"+item.totalUnit+"</td><td class='unitCmt' id='unitCmt"+item.autoId+"'>"+item.unitCmt+"</td><td class='totalPrice' id='totalPrice"+item.autoId+"'>"+item.totalPrice+"</td><td class='unitFob' id='unitFob"+item.autoId+"'>"+item.unitFob+"</td><td class='totalAmount' id='totalAmount"+item.autoId+"'>"+item.totalAmount+"</td><td><i class='fa fa-edit' onclick='setData()'> </i></td><td><i class='fa fa-trash' onclick='setData()'> </i></td></tr>";
+      isClosingNeed = true;
+    }
+    tables += "<tr id='itemRow"+i+"' data-id='"+item.autoId+"'><td>" + item.style + "</td><td>" + item.itemName + "</td><td>" + item.colorName + "</td><td>" + item.customerOrder + "</td><td>" + item.purchaseOrder + "</td><td>" + item.shippingMark + "</td><td>" + item.sizeReg + "</td>"
+    var sizeList = item.sizeList;
+    var sizeListLength = sizeList.length;
+    for (var j = 0; j < sizeListLength; j++) {
+      tables += "<td>" + sizeList[j].sizeQuantity + "</td>"
+    }
+    tables += "<td class='totalUnit' id='totalUnit" + item.autoId + "'>" + item.totalUnit + "</td><td class='unitCmt' id='unitCmt" + item.autoId + "'>" + item.unitCmt + "</td><td class='totalPrice' id='totalPrice" + item.autoId + "'>" + item.totalPrice + "</td><td class='unitFob' id='unitFob" + item.autoId + "'>" + item.unitFob + "</td><td class='totalAmount' id='totalAmount" + item.autoId + "'>" + item.totalAmount + "</td><td><i class='fa fa-edit' onclick='setBuyerPoItemDataForEdit(" + item.autoId + ")'> </i></td><td><i class='fa fa-trash' onclick='deleteBuyerPoItem(" + item.autoId + ")'> </i></td></tr>";
 
-        }
-        tables += "</tbody></table> </div></div>";
+  }
+  tables += "</tbody></table> </div></div>";
 
-        document.getElementById("tableList").innerHTML = tables;
+  document.getElementById("tableList").innerHTML = tables;
 }
 
 function drawDataTable(data) {

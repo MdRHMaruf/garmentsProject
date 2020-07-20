@@ -17,9 +17,12 @@ public class BuyerPoItem {
 	String buyerPOId;
 	String buyerId;
 	String styleId;
+	String style;
 	String itemId;
+	String itemName;
 	String factoryId;
 	String colorId;
+	String colorName;
 	String customerOrder;
 	String purchaseOrder;
 	String shippingMark;
@@ -35,34 +38,73 @@ public class BuyerPoItem {
 	String userId;
 	
 	public BuyerPoItem() {};
-	
-	
-	
-	public BuyerPoItem(String autoId, String buyerPOId, String buyerId, String styleId, String itemId, String factoryId,
-			String colorId, String customerOrder, String purchaseOrder, String shippingMark, String sizeReg,
-			String sizeGroupId, String sizeListString, double totalUnit, double unitCmt,
-			double totalPrice, double unitFob, double totalAmount, String userId) {
+
+	public BuyerPoItem(String autoId, String buyerPOId, String buyerId, String styleId, String style, String itemId,
+			String itemName, String factoryId, String colorId, String colorName, String customerOrder,
+			String purchaseOrder, String shippingMark, String sizeReg, String sizeGroupId,
+			double totalUnit, double unitCmt, double totalPrice, double unitFob,
+			double totalAmount, String userId) {
 		super();
 		this.autoId = autoId;
 		this.buyerPOId = buyerPOId;
 		this.buyerId = buyerId;
 		this.styleId = styleId;
+		this.style = style;
 		this.itemId = itemId;
+		this.itemName = itemName;
 		this.factoryId = factoryId;
 		this.colorId = colorId;
+		this.colorName = colorName;
 		this.customerOrder = customerOrder;
 		this.purchaseOrder = purchaseOrder;
 		this.shippingMark = shippingMark;
 		this.sizeReg = sizeReg;
 		this.sizeGroupId = sizeGroupId;
-		this.sizeListString = sizeListString;
-		this.sizeList = new ArrayList<Size>();
 		this.totalUnit = totalUnit;
 		this.unitCmt = unitCmt;
 		this.totalPrice = totalPrice;
 		this.unitFob = unitFob;
 		this.totalAmount = totalAmount;
 		this.userId = userId;
+	}
+
+
+
+
+
+
+	public String getStyle() {
+		return style;
+	}
+
+
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
+
+
+	public String getItemName() {
+		return itemName;
+	}
+
+
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+
+
+	public String getColorName() {
+		return colorName;
+	}
+
+
+
+	public void setColorName(String colorName) {
+		this.colorName = colorName;
 	}
 
 

@@ -148,33 +148,33 @@ public class OrderController {
 		return objmain;
 
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/getBuyerWiseStylesItem",method=RequestMethod.GET)
 	public JSONObject getBuyerWiseStylesItem(String buyerId) {
 		JSONObject objMain = new JSONObject();	
 		List<Style> styleList = orderService.getBuyerWiseStylesItem(buyerId);
-		
+
 		objMain.put("styleList",styleList);
 		return objMain; 
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/getStyleWiseItem",method=RequestMethod.GET)
 	public JSONObject getStyleWiseItem(String styleId) {
 		JSONObject objMain = new JSONObject();	
 		List<ItemDescription> itemList = orderService.getStyleWiseItem(styleId);
-		
+
 		objMain.put("itemList",itemList);
 		return objMain; 
 	}
-	
-	
-	
+
+
+
 	@RequestMapping(value = "/addItemToBuyerPO",method=RequestMethod.POST)
 	public @ResponseBody JSONObject addItemToBuyerPO(BuyerPoItem buyerPoItem) {
 		JSONObject objmain = new JSONObject();
-		
+
 		if(orderService.addBuyerPoItem(buyerPoItem)) {
 			JSONArray mainArray = new JSONArray();
 			List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoItem.getBuyerPOId());
@@ -182,45 +182,109 @@ public class OrderController {
 		}else {
 			objmain.put("result", "Something Wrong");
 		}
-		
+
 		return objmain;
 	}
 	
-	@RequestMapping(value = "/getBuyerPOItems",method=RequestMethod.GET)
-	public @ResponseBody JSONObject getBuyerPOItems(String buyerPoNo) {
+	@RequestMapping(value = "/editBuyerPoItem",method=RequestMethod.POST)
+	public @ResponseBody JSONObject editBuyerPoItem(BuyerPoItem buyerPoItem) {
 		JSONObject objmain = new JSONObject();
-		
-		
+
+		if(orderService.editBuyerPoItem(buyerPoItem)) {
+			JSONArray mainArray = new JSONArray();
+			List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoItem.getBuyerPOId());
+			objmain.put("itemList",buyerPOItemList);
+		}else {
+			objmain.put("result", "Something Wrong");
+		}
+
+		return objmain;
+	}
+
+	@RequestMapping(value = "/getBuyerPOItemsList",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getBuyerPOItemsList(String buyerPoNo) {
+		JSONObject objmain = new JSONObject();
+
+
 		JSONArray mainArray = new JSONArray();
 		List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoNo);
 		objmain.put("itemList",buyerPOItemList);
-		
+
 		return objmain;
 	}
 	
+	@RequestMapping(value = "/getBuyerPOItem",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getBuyerPOItem(String itemAutoId) {
+		JSONObject objmain = new JSONObject();
+
+
+		JSONArray mainArray = new JSONArray();
+		BuyerPoItem buyerPoItem = orderService.getBuyerPOItem(itemAutoId);
+		objmain.put("poItem",buyerPoItem);
+
+		return objmain;
+	}
+	
+	@RequestMapping(value = "/deleteBuyerPoItem",method=RequestMethod.GET)
+	public @ResponseBody JSONObject deleteBuyerPoItem(String buyerPoNo,String itemAutoId) {
+		JSONObject objmain = new JSONObject();
+
+		if(orderService.deleteBuyerPoItem(itemAutoId)) {
+			JSONArray mainArray = new JSONArray();
+			List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoNo);
+			objmain.put("itemList",buyerPOItemList);
+		}else {
+			objmain.put("itemList","Something Wrong");
+		}
+		return objmain;
+	}
+
 	@RequestMapping(value = "/getBuyerPO",method=RequestMethod.GET)
 	public @ResponseBody JSONObject getBuyerPO(String buyerPoNo) {
 		JSONObject objmain = new JSONObject();
-		
-		
+
+
 		JSONArray mainArray = new JSONArray();
 		BuyerPO buyerPo = orderService.getBuyerPO(buyerPoNo);
-		
+
 		objmain.put("buyerPO",buyerPo);
-		
+
 		return objmain;
 	}
 
 	@RequestMapping(value = "/submitBuyerPO",method=RequestMethod.POST)
 	public @ResponseBody JSONObject submitBuyerPO(BuyerPO buyerPO) {
 		JSONObject objmain = new JSONObject();
-		
+
 		if(orderService.submitBuyerPO(buyerPO)) {
 			objmain.put("result", "Successfull");
 		}else {
 			objmain.put("result", "Something Wrong");
 		}
-		
+
 		return objmain;
+	}
+	
+	@RequestMapping(value = "/editBuyerPO",method=RequestMethod.POST)
+	public @ResponseBody JSONObject editBuyerPO(BuyerPO buyerPO) {
+		JSONObject objmain = new JSONObject();
+
+		if(orderService.editBuyerPO(buyerPO)) {
+			objmain.put("result", "Successfull");
+		}else {
+			objmain.put("result", "Something Wrong");
+		}
+
+		return objmain;
+	}
+
+
+	//Buyer Purchase Create
+	@RequestMapping(value = "/accessories_indent",method=RequestMethod.GET)
+	public ModelAndView accessories_indent(ModelMap map,HttpSession session) {
+
+		ModelAndView view = new ModelAndView("order/accessories_indent");
+
+		return view; //JSP - /WEB-INF/view/index.jsp
 	}
 }

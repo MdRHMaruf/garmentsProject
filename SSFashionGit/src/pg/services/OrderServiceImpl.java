@@ -43,9 +43,33 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
+	public boolean editBuyerPO(BuyerPO buyerPo) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean editBuyerPoItem(BuyerPoItem buyerPoItem) {
+		// TODO Auto-generated method stub
+		return orderDAO.editBuyerPoItem(buyerPoItem);
+	}
+
+	@Override
+	public boolean deleteBuyerPoItem(String itemAutoId) {
+		// TODO Auto-generated method stub
+		return orderDAO.deleteBuyerPoItem(itemAutoId);
+	}
+
+	@Override
 	public List<BuyerPoItem> getBuyerPOItemList(String buyerPOId) {
 		// TODO Auto-generated method stub
 		return orderDAO.getBuyerPOItemList(buyerPOId);
+	}
+
+	@Override
+	public BuyerPoItem getBuyerPOItem(String itemAutoId) {
+		// TODO Auto-generated method stub
+		return orderDAO.getBuyerPOItem(itemAutoId);
 	}
 
 	@Override

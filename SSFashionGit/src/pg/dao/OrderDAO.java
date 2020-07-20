@@ -15,8 +15,12 @@ public interface OrderDAO {
 	List<ItemDescription> getStyleWiseItem(String styleId);
 	
 	boolean addBuyerPoItem(BuyerPoItem buyerPoItem);
+	boolean editBuyerPoItem(BuyerPoItem buyerPoItem);
 	List<BuyerPoItem> getBuyerPOItemList(String buyerPOId);
+	BuyerPoItem getBuyerPOItem(String itemAutoId);
+	boolean deleteBuyerPoItem(String itemAutoId);
 	boolean submitBuyerPO(BuyerPO buyerPo);
+	boolean editBuyerPO(BuyerPO buyerPo);
 	List<BuyerPO> getBuyerPoList();
 	BuyerPO getBuyerPO(String buyerPoNo);
 }

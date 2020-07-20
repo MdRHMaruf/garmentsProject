@@ -31,6 +31,7 @@
 	</div>
 	<input type="hidden" id="userId" value="<%=lg.get(0).getId()%>">
 	<input type="hidden" id="buyerPOId" value="0">
+	<input type="hidden" id="itemAutoId" value="0">
 
 	<div class="card-box">
 		<header class="d-flex justify-content-between">
@@ -194,7 +195,7 @@
 									<i class="fa fa-plus-circle"></i> Add
 								</button>
 								<button id="btnEdit" type="button"
-									class="btn btn-primary btn-sm ml-1" disabled>
+									class="btn btn-primary btn-sm ml-1" onclick="itemSizeEdit()" disabled>
 									<i class="fa fa-pencil-square"></i> Edit
 								</button>
 								<button id="btnReset" type="button"
@@ -263,8 +264,8 @@
 					<i class="fas fa-save"></i> Submit
 				</button>
 				<button id="btnPOEdit" type="button"
-					class="btn btn-primary btn-sm ml-1" disabled>
-					<i class="fa fa-pencil-square"></i> Edit
+					class="btn btn-primary btn-sm ml-1" onclick = "buyerPoEditAction()" disabled>
+					<i class="fa fa-pencil-square" ></i> Edit
 				</button>
 				<button id="btnRefresh" type="button"
 					class="btn btn-primary btn-sm ml-1" onclick="refreshAction()">
