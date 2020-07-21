@@ -1,5 +1,6 @@
 package pg.services;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.hibernate.sql.ordering.antlr.OrderByAliasResolver;
@@ -7,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pg.dao.OrderDAO;
-import pg.orderModel.BuyerPO;
-import pg.orderModel.BuyerPoItem;
+import pg.model.login;
 import pg.orderModel.Style;
 import pg.registerModel.ItemDescription;
-import pg.registerModel.StyleItem;
 @Service
 public class OrderServiceImpl implements OrderService{
 	
@@ -25,69 +24,28 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
-	public List<Style> getBuyerWiseStylesItem(String buyerId) {
+	public boolean SaveStyleCreate(String user, String buyerName, String itemName, String styleNo,String size, String date,
+			String frontimg, String backimg) throws SQLException {
 		// TODO Auto-generated method stub
-		return orderDAO.getBuyerWiseStylesItem(buyerId);
+		return orderDAO.SaveStyleCreate(user, buyerName, itemName, styleNo,size, date, frontimg, backimg);
 	}
 
 	@Override
-	public List<ItemDescription> getStyleWiseItem(String styleId) {
+	public List<Style> getStyleWiseItemList() {
 		// TODO Auto-generated method stub
-		return orderDAO.getStyleWiseItem(styleId);
+		return orderDAO.getStyleWiseItemList();
 	}
 
 	@Override
-	public boolean addBuyerPoItem(BuyerPoItem buyerPoItem) {
+	public List<Style> getStyleList() {
 		// TODO Auto-generated method stub
-		return orderDAO.addBuyerPoItem(buyerPoItem);
+		return orderDAO.getStyleList();
 	}
-
+	
 	@Override
-	public boolean editBuyerPO(BuyerPO buyerPo) {
+	public List<Style> getStyleWiseItem(String value) {
 		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean editBuyerPoItem(BuyerPoItem buyerPoItem) {
-		// TODO Auto-generated method stub
-		return orderDAO.editBuyerPoItem(buyerPoItem);
-	}
-
-	@Override
-	public boolean deleteBuyerPoItem(String itemAutoId) {
-		// TODO Auto-generated method stub
-		return orderDAO.deleteBuyerPoItem(itemAutoId);
-	}
-
-	@Override
-	public List<BuyerPoItem> getBuyerPOItemList(String buyerPOId) {
-		// TODO Auto-generated method stub
-		return orderDAO.getBuyerPOItemList(buyerPOId);
-	}
-
-	@Override
-	public BuyerPoItem getBuyerPOItem(String itemAutoId) {
-		// TODO Auto-generated method stub
-		return orderDAO.getBuyerPOItem(itemAutoId);
-	}
-
-	@Override
-	public boolean submitBuyerPO(BuyerPO buyerPo) {
-		// TODO Auto-generated method stub
-		return orderDAO.submitBuyerPO(buyerPo);
-	}
-
-	@Override
-	public List<BuyerPO> getBuyerPoList() {
-		// TODO Auto-generated method stub
-		return orderDAO.getBuyerPoList();
-	}
-
-	@Override
-	public BuyerPO getBuyerPO(String buyerPoNo) {
-		// TODO Auto-generated method stub
-		return orderDAO.getBuyerPO(buyerPoNo);
+		return orderDAO.getStyleWiseItem(value);
 	}
 
 }
