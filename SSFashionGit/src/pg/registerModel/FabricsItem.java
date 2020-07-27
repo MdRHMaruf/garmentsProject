@@ -3,7 +3,6 @@ package pg.registerModel;
 public class FabricsItem {
 	
 	String fabricsItemId;
-	
 	String fabricsItemName;
 	String reference;
 	String userId;

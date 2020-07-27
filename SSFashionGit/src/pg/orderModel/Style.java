@@ -1,5 +1,7 @@
 package pg.orderModel;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class Style {
 	String styleId;
 	String buyerId;
@@ -7,6 +9,14 @@ public class Style {
 	String styleNo;
 	String itemType;
 	String size;
+	
+	String date;
+	String itemName;
+	String itemId;
+	String styleItemAutoId;
+	
+	private MultipartFile  frontimage;
+	private MultipartFile  backImage;
 	
 	public Style() {}
 	
@@ -20,7 +30,73 @@ public class Style {
 		this.size = size;
 	}
 
+	public Style(String StyleItemAutoId,String StyleNo,String ItemName,String ItemId) {
+		this.styleItemAutoId=StyleItemAutoId;
+		this.styleNo=StyleNo;
+		this.itemName=ItemName;
+		this.itemId=ItemId;
+	}
+	
+	
+	public Style(String StyleId,String StyleNo) {
+		this.styleId=StyleId;
+		this.styleNo=StyleNo;
+	}
+	
+	
+	public Style(String StyleId,String ItemId,String ItemName) {
+		this.styleId=StyleId;
+		this.itemId=ItemId;
+		this.itemName=ItemName;
+	}
 
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public String getStyleItemAutoId() {
+		return styleItemAutoId;
+	}
+
+	public void setStyleItemAutoId(String styleItemAutoId) {
+		this.styleItemAutoId = styleItemAutoId;
+	}
+
+	public MultipartFile getFrontimage() {
+		return frontimage;
+	}
+
+	public void setFrontimage(MultipartFile frontimage) {
+		this.frontimage = frontimage;
+	}
+
+	public MultipartFile getBackImage() {
+		return backImage;
+	}
+
+	public void setBackImage(MultipartFile backImage) {
+		this.backImage = backImage;
+	}
 
 	public String getStyleId() {
 		return styleId;
