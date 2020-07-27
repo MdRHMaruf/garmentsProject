@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -31,25 +30,17 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import pg.orderModel.BuyerPO;
-import pg.orderModel.BuyerPoItem;
+
 import pg.model.login;
 import pg.orderModel.Style;
 import pg.registerModel.Brand;
 import pg.registerModel.BuyerModel;
-import pg.registerModel.Color;
-import pg.registerModel.Department;
-import pg.registerModel.Factory;
-import pg.registerModel.FactoryModel;
 import pg.registerModel.ItemDescription;
-import pg.registerModel.Line;
-import pg.registerModel.Size;
 import pg.registerModel.SizeGroup;
 import pg.services.OrderService;
 import pg.services.RegisterService;
 
 @Controller
-@RestController
 @SessionAttributes({"pg_admin"})
 public class OrderController {
 	
@@ -57,9 +48,10 @@ public class OrderController {
 	
 	@Autowired
 	private OrderService orderService;
+	
 	@Autowired
 	private RegisterService registerService;
-
+	
 	//Order Create 
 	@RequestMapping(value = "/style_create",method=RequestMethod.GET)
 	public ModelAndView style_create(ModelMap map,HttpSession session) {
