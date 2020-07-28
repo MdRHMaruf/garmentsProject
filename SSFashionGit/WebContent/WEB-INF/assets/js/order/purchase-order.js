@@ -1,41 +1,6 @@
 var styleIdForSet = 0;
 var itemIdForSet = 0;
-var sizeValueListForSet = [];
-var sizesListByGroup = JSON;
-function loadData() {
 
-  $.ajax({
-    type: 'GET',
-    dataType: 'json',
-    url: './sizesLoadByGroup',
-    data: {},
-    success: function (obj) {
-      sizesListByGroup = [];
-      sizesListByGroup = obj.sizeList;
-    }
-  });
-
-  $.ajax({
-    type: 'GET',
-    dataType: 'json',
-    url: './getBuyerPOItemsList',
-    data: {
-      buyerPoNo: "0"
-    },
-    success: function (data) {
-      if (data.result == "Something Wrong") {
-        dangerAlert("Something went wrong");
-      } else if (data.result == "duplicate") {
-        dangerAlert("Duplicate Item Name..This Item Name Already Exist")
-      } else {
-        drawItemTable(data.result);
-      }
-    }
-  });
-
-}
-
-window.onload = loadData;
 
 function buyerWiseStyleLoad() {
   var buyerId = $("#buyerName").val();
@@ -586,60 +551,6 @@ function setData(unitId) {
 
 }
 
-function drawItemTable(dataList) {
-  var length = dataList.length;
-  sizeGroupId = "";
-  var tables = "";
-  var isClosingNeed = false;
-  for (var i = 0; i < length; i++) {
-    var item = dataList[i];
-    
-    if (sizeGroupId != item.sizeGroupId) {
-      if (isClosingNeed) {
-        tables += "</tbody></table> </div></div>";
-      }
-      sizeGroupId = item.sizeGroupId;
-      tables += `<div class="row">
-                        <div class="col-md-12 table-responsive" >
-              <table class="table table-hover table-bordered table-sm mb-0 small-font">
-              <thead class="no-wrap-text bg-light">
-                <tr>
-                  <th scope="col" class="min-width-150">Style</th>
-                  <th scope="col" class="min-width-150">Item Name</th>
-                  <th scope="col" class="min-width-150">Color</th>
-                  <th scope="col">Customer Order</th>
-                  <th scope="col">Purchase Order</th>
-                  <th scope="col">Shipping Mark</th>
-                  <th scope="col">Sizes Reg-Tall-N/A</th>`
-      var sizeListLength = sizesListByGroup['groupId' + sizeGroupId].length;
-      for (var j = 0; j < sizeListLength; j++) {
-        tables += "<th class=\"min-width-60 mx-auto\"scope=\"col\">" + sizesListByGroup['groupId' + sizeGroupId][j].sizeName + "</th>";
-      }
-      tables += `<th scope="col">Total Units</th>
-                  <th scope="col">Unit CMT</th>
-                  <th scope="col">Total Price</th>
-                  <th scope="col">Unit FOB</th>
-                  <th scope="col">Total Price</th>
-                  <th scope="col"><i class="fa fa-edit"></i></th>
-                  <th scope="col"><i class="fa fa-trash"></i></th>
-                </tr>
-              </thead>
-              <tbody id="dataList">`
-      isClosingNeed = true;
-    }
-    tables += "<tr id='itemRow"+i+"' data-id='"+item.autoId+"'><td>" + item.style + "</td><td>" + item.itemName + "</td><td>" + item.colorName + "</td><td>" + item.customerOrder + "</td><td>" + item.purchaseOrder + "</td><td>" + item.shippingMark + "</td><td>" + item.sizeReg + "</td>"
-    var sizeList = item.sizeList;
-    var sizeListLength = sizeList.length;
-    for (var j = 0; j < sizeListLength; j++) {
-      tables += "<td>" + sizeList[j].sizeQuantity + "</td>"
-    }
-    tables += "<td class='totalUnit' id='totalUnit" + item.autoId + "'>" + item.totalUnit + "</td><td class='unitCmt' id='unitCmt" + item.autoId + "'>" + item.unitCmt + "</td><td class='totalPrice' id='totalPrice" + item.autoId + "'>" + item.totalPrice + "</td><td class='unitFob' id='unitFob" + item.autoId + "'>" + item.unitFob + "</td><td class='totalAmount' id='totalAmount" + item.autoId + "'>" + item.totalAmount + "</td><td><i class='fa fa-edit' onclick='setBuyerPoItemDataForEdit(" + item.autoId + ")'> </i></td><td><i class='fa fa-trash' onclick='deleteBuyerPoItem(" + item.autoId + ")'> </i></td></tr>";
-
-  }
-  tables += "</tbody></table> </div></div>";
-
-  document.getElementById("tableList").innerHTML = tables;
-}
 
 function drawDataTable(data) {
   var rows = [];

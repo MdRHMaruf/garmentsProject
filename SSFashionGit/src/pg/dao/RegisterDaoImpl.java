@@ -2163,6 +2163,40 @@ public class RegisterDaoImpl implements RegisterDao{
 	}
 
 	@Override
+	public Unit getUnit(String unitId) {
+		// TODO Auto-generated method stub
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+		Unit unit= null;
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select unitId,unitName,unitValue,UserId from tbUnits where unitId= '"+unitId+"'";
+			
+			List<?> list = session.createSQLQuery(sql).list();
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				
+				Object[] element = (Object[]) iter.next();
+				
+				unit = new Unit(element[0].toString(), element[1].toString(), element[2].toString(), element[3].toString());
+			}
+			tx.commit();
+		}
+		catch(Exception e){
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+		return unit;
+	}
+
+	@Override
 	public boolean isUnitExist(Unit unit) {
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();

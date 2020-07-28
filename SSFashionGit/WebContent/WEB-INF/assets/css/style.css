@@ -2819,3 +2819,25 @@ input[type=submit] {
 .bs-searchbox .form-control{
 	height: 25px;
 }
+.border-light-gray{
+	border: 1px solid #ced4da;
+}
+input[type=number] {
+    background-color: #f1f1f1;
+    width: 100%;
+}
+.no-wrap-text{
+	white-space : nowrap;
+}
+.min-width-60{
+  	min-width: 60px; 
+}
+.min-width-150{
+  	min-width: 150px; 
+}
+.form-control-sm{
+	border: 1px solid #ced4da;
+}
+.small-font th,td {
+    font-size: 14px;
+  }
