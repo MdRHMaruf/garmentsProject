@@ -42,7 +42,7 @@
 				<i class="fa fa-search"></i>
 			</button>
 		</header>
-		<hr>
+		<hr class="my-1">
 		<div class="row">
 			<div class="col-md-9 mb-1 pr-1">
 				<div class="row">
@@ -52,7 +52,7 @@
 						<div class="row">
 							<select id="buyerName" class="selectpicker col-md-12"
 								onchange="buyerWiseStyleLoad()" data-live-search="true"
-								data-style="btn-light btn-sm border-secondary">
+								data-style="btn-light btn-sm border-light-gray">
 								<option value="0">Select Buyer</option>
 								<c:forEach items="${buyerList}" var="buyer">
 									<option id="buyerName" value="${buyer.buyerid}">${buyer.buyername}</option>
@@ -69,7 +69,7 @@
 						<div class="row">
 							<select id="styleNo" class="selectpicker col-md-12"
 								onchange="styleWiseItemLoad()" data-live-search="true"
-								data-style="btn-light btn-sm border-secondary">
+								data-style="btn-light btn-sm border-light-gray">
 								<option id="styleNo" value="0">Select Style</option>
 							</select>
 						</div>
@@ -81,7 +81,7 @@
 						<div class="row">
 							<select id="itemType" class="selectpicker col-md-12"
 								data-live-search="true"
-								data-style="btn-light btn-sm border-secondary">
+								data-style="btn-light btn-sm border-light-gray">
 								<option id="itemType" value="0">Select Item Type</option>
 							</select>
 						</div>
@@ -91,11 +91,11 @@
 				<div class="row">
 					<div class="col-md-7">
 						<div class="form-group mb-0  row">
-							<label for="factory" class="col-md-2 col-form-label-sm pr-0">Factory</label>
+							<label for="factory" class="col-md-2 col-form-label-sm pr-0 pb-0">Factory</label>
 
 							<select id="factory" class="selectpicker col-sm-10"
 								data-live-search="true"
-								data-style="btn-light btn-sm border-secondary">
+								data-style="btn-light btn-sm border-light-gray">
 
 								<option id="factory" value="0">Select Factory</option>
 								<c:forEach items="${factoryList}" var="factory">
@@ -109,11 +109,11 @@
 					<div class="col-md-5">
 
 						<div class="form-group mb-0 row">
-							<label for="color" class="col-md-2 col-form-label-sm pr-0">Color</label>
+							<label for="color" class="col-md-2 col-form-label-sm pr-0 pb-0">Color</label>
 
 							<select id="color" class="selectpicker col-md-10"
 								data-live-search="true"
-								data-style="btn-light btn-sm border-secondary">
+								data-style="btn-light btn-sm border-light-gray">
 
 								<option id="color" value="0">Select Color</option>
 								<c:forEach items="${colorList}" var="color">
@@ -130,7 +130,7 @@
 					<div class="col-md-6">
 						<div class="form-group mb-0  row">
 							<label for="customerOrder "
-								class="col-md-4 col-form-label-sm pr-0">Customer Order</label>
+								class="col-md-4 col-form-label-sm pr-0 pb-0">Customer Order</label>
 							<div class="col-sm-8">
 								<input type="text" class="form-control-sm" id="customerOrder">
 							</div>
@@ -141,7 +141,7 @@
 
 						<div class="form-group mb-0 row">
 							<label for="purchaseOrder"
-								class="col-md-4 col-form-label-sm pr-0">Purchase Order</label>
+								class="col-md-4 col-form-label-sm pr-0 pb-0">Purchase Order</label>
 							<div class="col-md-8">
 								<input type="text" class="form-control-sm" id="purchaseOrder">
 							</div>

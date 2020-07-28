@@ -150,6 +150,12 @@ public class RegisterServiceImpl implements RegisterService{
 	}
 
 	@Override
+	public Unit getUnit(String unitId) {
+		// TODO Auto-generated method stub
+		return registerDao.getUnit(unitId);
+	}
+
+	@Override
 	public boolean isUnitExist(Unit unit) {
 		// TODO Auto-generated method stub
 		return registerDao.isUnitExist(unit);

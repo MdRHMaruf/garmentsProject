@@ -99,6 +99,7 @@ public interface RegisterDao {
 	public boolean saveUnit(Unit unit);
 	public boolean editUnit(Unit unit);
 	public List<Unit> getUnitList();
+	public Unit getUnit(String unitId);
 	public boolean isUnitExist(Unit unit);
 
 
