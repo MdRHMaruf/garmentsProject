@@ -62,7 +62,7 @@
 				<div class="form-group mb-0  row">
 					<label for="purchaseOrder"
 						class="col-md-4 col-form-label-sm pr-0 mb-1 pb-1">Purchase
-						Order</label> <select id="purchaseOrder" onchange="styleWiseItemLoad()"
+						Order</label> <select id="purchaseOrder" onchange="poWiseStyleLoad()"
 						class="selectpicker col-md-8 px-0" data-live-search="true"
 						data-style="btn-light btn-sm border-light-gray">
 						<option id="purchaseOrder" value="0">Select Purchase
@@ -78,7 +78,7 @@
 				<div class="form-group mb-0  row">
 					<label for="deliveryTo"
 						class="col-md-3 col-form-label-sm pr-0 mb-1 pb-1">Delivery
-						To</label> <select id="deliveryTo" onchange="styleWiseItemLoad()"
+						To</label> <select id="deliveryTo"
 						class="selectpicker col-md-9 px-0" data-live-search="true"
 						data-style="btn-light btn-sm border-light-gray">
 						<option id="deliveryTo" value="0">--- Select --- </option>
@@ -91,7 +91,7 @@
 				<div class="form-group mb-0  row">
 					<label for="orderBy"
 						class="col-md-3 col-form-label-sm pr-0 mb-1 pb-1">Order By</label>
-					<select id="orderBy" onchange="styleWiseItemLoad()"
+					<select id="orderBy"
 						class="selectpicker col-md-9 px-0" data-live-search="true"
 						data-style="btn-light btn-sm border-light-gray">
 						<option id="orderBy" value="0">--- Select --- </option>
@@ -104,7 +104,7 @@
 				<div class="form-group mb-0  row">
 					<label for="billTo"
 						class="col-md-3 col-form-label-sm pr-0 mb-1 pb-1">Bill To</label>
-					<select id="billTo" onchange="styleWiseItemLoad()"
+					<select id="billTo"
 						class="selectpicker col-md-9 px-0" data-live-search="true"
 						data-style="btn-light btn-sm border-light-gray">
 						<option id="billTo" value="0">--- Select --- </option>
@@ -130,8 +130,7 @@
 						<select id="paymentType" 
 						class="form-control-sm col-md-8 px-0">
 						<option id="paymentType" value="0">Select Purchase Order</option>
-						<% 
-							
+						<% 		
 							int length = PaymentType.values().length;
 							for(int i=0;i<length;i++){			
 						%>
@@ -159,7 +158,7 @@
 		<div class="row">
 			<div class="col-md-2 pr-0 pl-1">
 				<label for="styleNo" class="col-form-label-sm my-0 py-0">Style
-					No</label> <select id="styleNo" onchange="styleWiseItemLoad()"
+					No</label> <select id="styleNo"
 					class="selectpicker col-md-12 px-0" data-live-search="true"
 					data-style="btn-light btn-sm border-light-gray">
 					<option id="styleNo" value="0">Select Style</option>
@@ -168,18 +167,21 @@
 
 			<div class="col-md-1 pr-0 pl-1">
 				<label for="type" class="col-form-label-sm my-0 py-0">Type</label> <select
-					id="type" onchange="styleWiseItemLoad()"
+					id="type" onchange="typeWiseIndentItemLoad()"
 					class="form-control-sm col-md-12 px-0">
 					<option id="type" value="0">Select Type</option>
+					<option id="type" value="1">Fabrics</option>
+					<option id="type" value="2">Accessories</option>
+					<option id="type" value="3">Curton</option>
 				</select>
 			</div>
 
 			<div class="col-md-3 pr-0 pl-1">
 				<label for="indentItem" class="col-form-label-sm my-0 py-0">Indent
-					Item</label> <select id="indentItem" onchange="styleWiseItemLoad()"
+					Item</label> <select id="indentItem" 
 					class="selectpicker col-md-12 px-0" data-live-search="true"
 					data-style="btn-light btn-sm border-light-gray">
-					<option id="indentItem" value="0">Select Style</option>
+					<option id="indentItem" value="0">--Select Indent Item--</option>
 				</select>
 			</div>
 
@@ -191,9 +193,9 @@
 						data-live-search="true"
 						data-style="btn-light btn-sm border-light-gray"
 						onchange="unitChangeAction()">
-						<option id="supplierName" value="0">Select Unit</option>
-						<c:forEach items="${unitList}" var="unit">
-							<option id="supplierName" value="${unit.unitId}">${unit.unitName}</option>
+						<option id="supplierName" value="0">--Select SupplierName--</option>
+						<c:forEach items="${supplierList}" var="supplier">
+							<option id="supplierName" value="${supplier.supplierid}">${supplier.suppliername}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -213,7 +215,7 @@
 					<div class="col-md-4 pr-0 pl-1">
 
 						<button id="btnAdd" type="button" style="margin-top:1.3rem;" class="btn btn-primary btn-sm"
-							onclick="itemSizeAdd()">
+							onclick="indentItemAdd()">
 							<i class="fa fa-plus-circle"></i> Add
 						</button>
 					</div>

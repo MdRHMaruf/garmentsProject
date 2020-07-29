@@ -1,75 +1,80 @@
 var styleIdForSet = 0;
 var itemIdForSet = 0;
+var indentIdForSet = 0;
+function poWiseStyleLoad() {
+  var purchaseOrder = $("#purchaseOrder").val();
 
-
-function buyerWiseStyleLoad() {
-  var buyerId = $("#buyerName").val();
-
-  if(buyerId != 0){
+  if (purchaseOrder != "0") {
     $.ajax({
       type: 'GET',
       dataType: 'json',
-      url: './getBuyerWiseStylesItem',
+      url: './getPOWiseStyleLoad',
       data: {
-        buyerId: buyerId
+        purchaseOrder: purchaseOrder
       },
       success: function (data) {
-  
+
         var styleList = data.styleList;
-        var options = "<option id='styleNo' value='0' selected>Select Style</option>";
+        var options = "<option id='styleNo' value='0' selected>Select Style No</option>";
         var length = styleList.length;
         for (var i = 0; i < length; i++) {
           options += "<option id='styleNo' value='" + styleList[i].styleId + "'>" + styleList[i].styleNo + "</option>";
         };
-        $("#styleNo").html(options);
-        $('.selectpicker').selectpicker('refresh');
+        document.getElementById("styleNo").innerHTML = options;
+        $('#styleNo').selectpicker('refresh');
         $('#styleNo').val(styleIdForSet).change();
         styleIdForSet = 0;
-        
       }
     });
-  }else{
-    var options = "<option id='styleNo' value='0' selected>Select Style</option>";
+  } else {
+    var options = "<option id='styleNo' value='0' selected>Select Style No</option>";
     $("#styleNo").html(options);
     $('#styleNo').selectpicker('refresh');
-    $('#styleNo').val("0").change();
+    $('#styleNo').val(0).change();
+    styleIdForSet = 0;
   }
-  
 }
 
-function styleWiseItemLoad() {
+function typeWiseIndentItemLoad(){
+  var type = $("#type").val();
+  var purchaseOrder = $("#purchaseOrder").val();
   var styleId = $("#styleNo").val();
+  if(type != "0"){ 
+    if(type == "3"){
 
-  if(styleId != 0){
-    $.ajax({
-      type: 'GET',
-      dataType: 'json',
-      url: './getStyleWiseItem',
-      data: {
-        styleId: styleId
-      },
-      success: function (data) {
+    }else{
+      $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: './getTypeWiseIndentItems',
+        data: {
+          purchaseOrder : purchaseOrder,
+          styleId : styleId,
+          type : type
+        },
+        success: function (data) {
   
-        var itemList = data.itemList;
-        var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
-        var length = itemList.length;
-        for (var i = 0; i < length; i++) {
-          options += "<option id='itemType' value='" + itemList[i].itemId + "'>" + itemList[i].itemName + "</option>";
-        };
-        document.getElementById("itemType").innerHTML = options;
-        $('.selectpicker').selectpicker('refresh');
-        $('#itemType').val(itemIdForSet).change();
-        itemIdForSet = 0;
-      }
-    });
+          var itemList = data.itemList;
+          var options = "<option id='indentItem' value='0' selected>--Select Indent Item--</option>";
+          var length = itemList.length;
+          for (var i = 0; i < length; i++) {
+            options += "<option id='indentItem' value='" + itemList[i].accessoriesItemId + "'>" + itemList[i].accessoriesItemName + "</option>";
+          };
+          document.getElementById("indentItem").innerHTML = options;
+          $('#indentItem').selectpicker('refresh');
+          $('#indentItem').val(indentIdForSet).change();
+          indentIdForSet = 0;
+        }
+      });
+    }
+    
   }else{
-    var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
-    $("#itemType").html(options);
-    $('#itemType').selectpicker('refresh');
-    $('#itemType').val(itemIdForSet).change();
-    itemIdForSet = 0;
+    var options = "<option id='indentItem' value='0' selected>--Select Indent Item--</option>";
+    $("#indentItem").html(options);
+    $('#indentItem').selectpicker('refresh');
+    $('#indentItem').val(0).change();
+    indentIdForSet = 0;
   }
-  
 }
 
 function itemSizeAdd() {

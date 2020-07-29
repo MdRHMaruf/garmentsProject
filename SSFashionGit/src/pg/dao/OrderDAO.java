@@ -7,6 +7,7 @@ import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
 import pg.orderModel.Style;
+import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.FabricsItem;
 import pg.registerModel.ItemDescription;
@@ -51,4 +52,8 @@ public interface OrderDAO {
 	List<FabricsIndent> getFabricsIndentList();
 	FabricsIndent getFabricsIndent(String indentId);
 	double getOrderQuantity(String purchaseOrder,String styleId,String itemId,String colorId);
+	
+	//Purchase Order
+	
+	List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder,String styleId,String type);
 }

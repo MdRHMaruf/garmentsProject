@@ -14,6 +14,7 @@ import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
 import pg.orderModel.Style;
+import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.ItemDescription;
 import pg.registerModel.ParticularItem;
@@ -1289,6 +1290,53 @@ public class OrderDAOImpl implements OrderDAO{
 			session.close();
 		}
 		return qty;
+	}
+
+	@Override
+	public List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder, String styleId, String type) {
+		// TODO Auto-generated method stub
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+		List<AccessoriesItem> dataList=new ArrayList<AccessoriesItem>();
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+			
+			String sql = "";
+			if(type.equals("1")) {
+				sql = "select a.itemid,a.itemname \r\n" + 
+						"from tbAccessoriesIndent ai \r\n" + 
+						"left join TbAccessoriesItem a \r\n" + 
+						"on ai.accessoriesItemId = a.itemid \r\n" + 
+						"where styleid='"+styleId+"'  group by a.itemid,a.itemname";
+			}else if(type.equals("2")) {
+				sql = "select fi.id,fi.ItemName \r\n" + 
+						"from tbrequiredfabrics rf \r\n" + 
+						"left join TbFabricsItem fi \r\n" + 
+						"on rf.itemid = fi.id \r\n" + 
+						"where styleid='"+styleId+"'  group by fi.id,fi.ItemName";
+			}else {
+				return null;
+			}
+			
+			List<?> list = session.createSQLQuery(sql).list();
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+				dataList.add(new AccessoriesItem(element[0].toString(), element[1].toString(), "", ""));
+			}
+			tx.commit();
+		}
+		catch(Exception e){
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+		return dataList;
 	}
 
 }

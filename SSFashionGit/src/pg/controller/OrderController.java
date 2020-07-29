@@ -24,6 +24,7 @@ import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
 import pg.orderModel.Style;
+import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Brand;
 import pg.registerModel.BuyerModel;
 import pg.registerModel.Color;
@@ -37,6 +38,7 @@ import pg.registerModel.MerchandiserInfo;
 import pg.registerModel.ParticularItem;
 import pg.registerModel.Size;
 import pg.registerModel.SizeGroup;
+import pg.registerModel.SupplierModel;
 import pg.registerModel.Unit;
 import pg.services.OrderService;
 import pg.services.RegisterService;
@@ -504,12 +506,21 @@ public class OrderController {
 		List<String> poList = orderService.getPurchaseOrderList();
 		List<Factory> factoryList = registerService.getFactoryNameList();
 		List<MerchandiserInfo> merchandiserList = registerService.getMerchandiserList();
+		List<SupplierModel> supplierList = registerService.getAllSupplier();
 		view.addObject("poList",poList);
 		view.addObject("factoryList",factoryList);
 		view.addObject("merchendiserList",merchandiserList);
+		view.addObject("supplierList",supplierList);
 		return view; //JSP - /WEB-INF/view/index.jsp
 	}
 
+	@RequestMapping(value = "/getTypeWiseIndentItems",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getTypeWiseIndentItems(String purchaseOrder,String styleId,String type) {
+		JSONObject objmain = new JSONObject();
+		List<AccessoriesItem>  itemList = orderService.getTypeWiseIndentItems(purchaseOrder,styleId,type);
+		objmain.put("itemList", itemList);
+		return objmain;
+	}
 	
 
 

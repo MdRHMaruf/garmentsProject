@@ -40,7 +40,7 @@ window.onload = loadData;
 function buyerWiseStyleLoad() {
   var buyerId = $("#buyerName").val();
 
-  if(buyerId != 0){
+  if (buyerId != 0) {
     $.ajax({
       type: 'GET',
       dataType: 'json',
@@ -49,7 +49,7 @@ function buyerWiseStyleLoad() {
         buyerId: buyerId
       },
       success: function (data) {
-  
+
         var styleList = data.styleList;
         var options = "<option id='styleNo' value='0' selected>Select Style</option>";
         var length = styleList.length;
@@ -60,22 +60,22 @@ function buyerWiseStyleLoad() {
         $('.selectpicker').selectpicker('refresh');
         $('#styleNo').val(styleIdForSet).change();
         styleIdForSet = 0;
-        
+
       }
     });
-  }else{
+  } else {
     var options = "<option id='styleNo' value='0' selected>Select Style</option>";
     $("#styleNo").html(options);
     $('#styleNo').selectpicker('refresh');
     $('#styleNo').val("0").change();
   }
-  
+
 }
 
 function styleWiseItemLoad() {
   var styleId = $("#styleNo").val();
 
-  if(styleId != 0){
+  if (styleId != 0) {
     $.ajax({
       type: 'GET',
       dataType: 'json',
@@ -84,7 +84,7 @@ function styleWiseItemLoad() {
         styleId: styleId
       },
       success: function (data) {
-  
+
         var itemList = data.itemList;
         var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
         var length = itemList.length;
@@ -97,14 +97,14 @@ function styleWiseItemLoad() {
         itemIdForSet = 0;
       }
     });
-  }else{
+  } else {
     var options = "<option id='itemType' value='0' selected>Select Item Type</option>";
     $("#itemType").html(options);
     $('#itemType').selectpicker('refresh');
     $('#itemType').val(itemIdForSet).change();
     itemIdForSet = 0;
   }
-  
+
 }
 
 function itemSizeAdd() {
@@ -129,51 +129,55 @@ function itemSizeAdd() {
         if (factoryId != 0) {
           if (colorId != 0) {
             if (sizeGroupId != 0) {
-              var sizeListLength = $(".sizeValue").length;
-              var sizeList = "";
-              for (var i = 0; i < sizeListLength; i++) {
-                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
-                var id = $("#sizeId" + i).val().trim();
-                sizeList += "id=" + id + ",quantity=" + quantity + " ";
-                totalUnit += Number(quantity);
-              }
-
-
-              $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: './addItemToBuyerPO',
-                data: {
-                  autoId: "0",
-                  buyerPOId: buyerPOId,
-                  buyerId: buyerId,
-                  styleId: styleId,
-                  itemId: itemId,
-                  factoryId: factoryId,
-                  colorId: colorId,
-                  customerOrder: customerOrder,
-                  purchaseOrder: purchaseOrder,
-                  shippingMark: shippingMark,
-                  sizeGroupId: sizeGroupId,
-                  sizeListString: sizeList,
-                  totalUnit: totalUnit,
-                  unitCmt: 1,
-                  totalPrice: 1,
-                  unitFob: 1,
-                  totalAmount: 1,
-                  userId: userId
-                },
-                success: function (data) {
-                  if (data.result == "Something Wrong") {
-                    dangerAlert("Something went wrong");
-                  } else if (data.result == "duplicate") {
-                    dangerAlert("Duplicate Item Name..This Item Name Already Exist")
-                  } else {
-                    drawItemTable(data.result);
-                  }
+              if (purchaseOrder != "") {
+                var sizeListLength = $(".sizeValue").length;
+                var sizeList = "";
+                for (var i = 0; i < sizeListLength; i++) {
+                  var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
+                  var id = $("#sizeId" + i).val().trim();
+                  sizeList += "id=" + id + ",quantity=" + quantity + " ";
+                  totalUnit += Number(quantity);
                 }
-              });
 
+
+                $.ajax({
+                  type: 'POST',
+                  dataType: 'json',
+                  url: './addItemToBuyerPO',
+                  data: {
+                    autoId: "0",
+                    buyerPOId: buyerPOId,
+                    buyerId: buyerId,
+                    styleId: styleId,
+                    itemId: itemId,
+                    factoryId: factoryId,
+                    colorId: colorId,
+                    customerOrder: customerOrder,
+                    purchaseOrder: purchaseOrder,
+                    shippingMark: shippingMark,
+                    sizeGroupId: sizeGroupId,
+                    sizeListString: sizeList,
+                    totalUnit: totalUnit,
+                    unitCmt: 1,
+                    totalPrice: 1,
+                    unitFob: 1,
+                    totalAmount: 1,
+                    userId: userId
+                  },
+                  success: function (data) {
+                    if (data.result == "Something Wrong") {
+                      dangerAlert("Something went wrong");
+                    } else if (data.result == "duplicate") {
+                      dangerAlert("Duplicate Item Name..This Item Name Already Exist")
+                    } else {
+                      drawItemTable(data.result);
+                    }
+                  }
+                });
+              } else {
+                warningAlert("Purchase Order Not Set... Please Select Purchase Order");
+                $("#purchaseOrder").focus();
+              }
             } else {
               warningAlert("Size Group not selected ... Please Select Size group");
               $("#sizeGroup").focus();
@@ -224,51 +228,55 @@ function itemSizeEdit() {
         if (factoryId != 0) {
           if (colorId != 0) {
             if (sizeGroupId != 0) {
-              var sizeListLength = $(".sizeValue").length;
-              var sizeList = "";
-              for (var i = 0; i < sizeListLength; i++) {
-                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
-                var id = $("#sizeId" + i).val().trim();
-                sizeList += "id=" + id + ",quantity=" + quantity + " ";
-                totalUnit += Number(quantity);
-              }
-
-
-              $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: './editBuyerPoItem',
-                data: {
-                  autoId: itemAutoId,
-                  buyerPOId: buyerPOId,
-                  buyerId: buyerId,
-                  styleId: styleId,
-                  itemId: itemId,
-                  factoryId: factoryId,
-                  colorId: colorId,
-                  customerOrder: customerOrder,
-                  purchaseOrder: purchaseOrder,
-                  shippingMark: shippingMark,
-                  sizeGroupId: sizeGroupId,
-                  sizeListString: sizeList,
-                  totalUnit: totalUnit,
-                  unitCmt: 1,
-                  totalPrice: 1,
-                  unitFob: 1,
-                  totalAmount: 1,
-                  userId: userId
-                },
-                success: function (data) {
-                  if (data.result == "Something Wrong") {
-                    dangerAlert("Something went wrong");
-                  } else if (data.result == "duplicate") {
-                    dangerAlert("Duplicate Item Name..This Item Name Already Exist")
-                  } else {
-                    drawItemTable(data.result);
-                  }
+              if (purchaseOrder != "") {
+                var sizeListLength = $(".sizeValue").length;
+                var sizeList = "";
+                for (var i = 0; i < sizeListLength; i++) {
+                  var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
+                  var id = $("#sizeId" + i).val().trim();
+                  sizeList += "id=" + id + ",quantity=" + quantity + " ";
+                  totalUnit += Number(quantity);
                 }
-              });
 
+
+                $.ajax({
+                  type: 'POST',
+                  dataType: 'json',
+                  url: './editBuyerPoItem',
+                  data: {
+                    autoId: itemAutoId,
+                    buyerPOId: buyerPOId,
+                    buyerId: buyerId,
+                    styleId: styleId,
+                    itemId: itemId,
+                    factoryId: factoryId,
+                    colorId: colorId,
+                    customerOrder: customerOrder,
+                    purchaseOrder: purchaseOrder,
+                    shippingMark: shippingMark,
+                    sizeGroupId: sizeGroupId,
+                    sizeListString: sizeList,
+                    totalUnit: totalUnit,
+                    unitCmt: 1,
+                    totalPrice: 1,
+                    unitFob: 1,
+                    totalAmount: 1,
+                    userId: userId
+                  },
+                  success: function (data) {
+                    if (data.result == "Something Wrong") {
+                      dangerAlert("Something went wrong");
+                    } else if (data.result == "duplicate") {
+                      dangerAlert("Duplicate Item Name..This Item Name Already Exist")
+                    } else {
+                      drawItemTable(data.result);
+                    }
+                  }
+                });
+              } else {
+                warningAlert("Purchase Order Not Set... Please Select Purchase Order");
+                $("#purchaseOrder").focus();
+              }
             } else {
               warningAlert("Size Group not selected ... Please Select Size group");
               $("#sizeGroup").focus();
@@ -310,13 +318,13 @@ function submitAction() {
   var unitFob = 0;
   var totalAmount = 0;
 
-  for(var i = 0;i<totalRow.length;i++){
-      var autoId =  $('#itemRow'+i).data('id');
-      totalUnit += Number($("#totalUnit"+autoId).text());
-      unitCmt += Number($("#unitCmt"+autoId).text());
-      totalPrice += Number($("#totalPrice"+autoId).text());
-      unitFob += Number($("#unitFob"+autoId).text());
-      totalAmount += Number($("#totalAmount"+autoId).text());
+  for (var i = 0; i < totalRow.length; i++) {
+    var autoId = $('#itemRow' + i).data('id');
+    totalUnit += Number($("#totalUnit" + autoId).text());
+    unitCmt += Number($("#unitCmt" + autoId).text());
+    totalPrice += Number($("#totalPrice" + autoId).text());
+    unitFob += Number($("#unitFob" + autoId).text());
+    totalAmount += Number($("#totalAmount" + autoId).text());
   }
 
   var note = $("#note").val();
@@ -375,14 +383,14 @@ function buyerPoEditAction() {
   var totalPrice = 0;
   var unitFob = 0;
   var totalAmount = 0;
-  for(var i = 0;i<totalRow.length;i++){
-    var autoId =  $('#itemRow'+i).data('id');
-    totalUnit += Number($("#totalUnit"+autoId).text());
-    unitCmt += Number($("#unitCmt"+autoId).text());
-    totalPrice += Number($("#totalPrice"+autoId).text());
-    unitFob += Number($("#unitFob"+autoId).text());
-    totalAmount += Number($("#totalAmount"+autoId).text());
-}
+  for (var i = 0; i < totalRow.length; i++) {
+    var autoId = $('#itemRow' + i).data('id');
+    totalUnit += Number($("#totalUnit" + autoId).text());
+    unitCmt += Number($("#unitCmt" + autoId).text());
+    totalPrice += Number($("#totalPrice" + autoId).text());
+    unitFob += Number($("#unitFob" + autoId).text());
+    totalAmount += Number($("#totalAmount" + autoId).text());
+  }
 
   var note = $("#note").val();
   var remarks = $("#remarks").val();
@@ -446,7 +454,7 @@ function searchBuyerPO(buyerPoNo) {
       } else if (data.buyerPO == "duplicate") {
         dangerAlert("Duplicate Unit Name..This Unit Name Already Exist")
       } else {
-        
+
         var buyerPo = data.buyerPO;
         console.log(buyerPo);
         $("#buyerPOId").val(buyerPo.buyerPoId);
@@ -480,7 +488,7 @@ function setBuyerPoItemDataForEdit(itemAutoId) {
       } else if (data.result == "duplicate") {
         dangerAlert("Duplicate Unit Name..This Unit Name Already Exist")
       } else {
-        
+
         var item = data.poItem;
         console.log(item);
         $("#itemAutoId").val(item.autoId);
@@ -501,11 +509,11 @@ function setBuyerPoItemDataForEdit(itemAutoId) {
         itemIdForSet = item.itemId;
         $("#buyerName").val(item.buyerId).change();
 
-        
+
       }
     }
   });
-  
+
 }
 
 function deleteBuyerPoItem(itemAutoId) {
@@ -550,7 +558,7 @@ function reset() {
 
 function refreshAction() {
   location.reload();
-  
+
 }
 
 function sizeLoadByGroup() {
@@ -567,13 +575,13 @@ function sizeLoadByGroup() {
 
   }
   $("#listGroup").html(child);
-  if(sizeValueListForSet.length>0){
-    for(var i =0 ;i<length;i++){
-      $("#sizeValue"+i).val(sizeValueListForSet[i].sizeQuantity);
+  if (sizeValueListForSet.length > 0) {
+    for (var i = 0; i < length; i++) {
+      $("#sizeValue" + i).val(sizeValueListForSet[i].sizeQuantity);
     }
     sizeValueListForSet = [];
   }
-  
+
 }
 function setData(unitId) {
 
@@ -593,7 +601,7 @@ function drawItemTable(dataList) {
   var isClosingNeed = false;
   for (var i = 0; i < length; i++) {
     var item = dataList[i];
-    
+
     if (sizeGroupId != item.sizeGroupId) {
       if (isClosingNeed) {
         tables += "</tbody></table> </div></div>";
@@ -627,7 +635,7 @@ function drawItemTable(dataList) {
               <tbody id="dataList">`
       isClosingNeed = true;
     }
-    tables += "<tr id='itemRow"+i+"' data-id='"+item.autoId+"'><td>" + item.style + "</td><td>" + item.itemName + "</td><td>" + item.colorName + "</td><td>" + item.customerOrder + "</td><td>" + item.purchaseOrder + "</td><td>" + item.shippingMark + "</td><td>" + item.sizeReg + "</td>"
+    tables += "<tr id='itemRow" + i + "' data-id='" + item.autoId + "'><td>" + item.style + "</td><td>" + item.itemName + "</td><td>" + item.colorName + "</td><td>" + item.customerOrder + "</td><td>" + item.purchaseOrder + "</td><td>" + item.shippingMark + "</td><td>" + item.sizeReg + "</td>"
     var sizeList = item.sizeList;
     var sizeListLength = sizeList.length;
     for (var j = 0; j < sizeListLength; j++) {

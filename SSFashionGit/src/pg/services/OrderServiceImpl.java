@@ -12,6 +12,7 @@ import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
 import pg.orderModel.Style;
+import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.ItemDescription;
 import pg.registerModel.ParticularItem;
@@ -201,6 +202,12 @@ public class OrderServiceImpl implements OrderService{
 	public double getOrderQuantity(String purchaseOrder, String styleId, String itemId, String colorId) {
 		// TODO Auto-generated method stub
 		return orderDAO.getOrderQuantity(purchaseOrder, styleId, itemId, colorId);
+	}
+
+	@Override
+	public List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder, String styleId, String type) {
+		// TODO Auto-generated method stub
+		return orderDAO.getTypeWiseIndentItems(purchaseOrder, styleId, type);
 	}
 
 }

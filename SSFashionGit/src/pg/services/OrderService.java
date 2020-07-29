@@ -7,6 +7,7 @@ import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
 import pg.orderModel.Style;
+import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.ItemDescription;
 import pg.registerModel.ParticularItem;
@@ -50,4 +51,6 @@ public interface OrderService {
 	List<FabricsIndent> getFabricsIndentList();
 	FabricsIndent getFabricsIndent(String indentId);
 	double getOrderQuantity(String purchaseOrder,String styleId,String itemId,String colorId);
+	
+	List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder,String styleId,String type);
 }
