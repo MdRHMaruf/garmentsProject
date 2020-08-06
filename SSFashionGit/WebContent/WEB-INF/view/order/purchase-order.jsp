@@ -129,7 +129,7 @@
 						Type</label> 
 						<select id="paymentType" 
 						class="form-control-sm col-md-8 px-0">
-						<option id="paymentType" value="0">Select Purchase Order</option>
+						<option id="paymentType" value="0">Select Payment Type</option>
 						<% 		
 							int length = PaymentType.values().length;
 							for(int i=0;i<length;i++){			
@@ -143,7 +143,7 @@
 					<label for="currency"
 						class="col-md-4 col-form-label-sm pr-0 mb-1 pb-1">Currency</label>
 					<select id="currency" class="form-control-sm col-md-8 px-0">
-						<option id="currency" value="0">Select Purchase Order</option>
+						<option id="currency" value="0">Select Currency</option>
 						<% 
 							length = Currency.values().length;
 							for(int i=0;i<length;i++){			
@@ -237,14 +237,16 @@
 							<th>P.O.</th>
 							<th>Style</th>
 							<th>Item Name</th>
-							<th>Color Name</th>
-							<th>Fabrices Item</th>
-							<th>Dozen</th>
-							<th>Consumption</th>
-							<th>%QTY</th>
-							<th>Total QTY</th>
+							<th>Item Color</th>
+							<th>Color code</th>
+							<th>Size</th>
+							<th>Supplier Name</th>
+							<th>Qty</th>
+							<th>Grand Qty</th>
 							<th>Unit</th>
-							<th><i class="fa fa-info-circle"></i></th>
+							<th>Rate</th>
+							<th>Amount</th>
+							<th><input type="checkbox"></th>
 						</tr>
 					</thead>
 					<tbody id="dataList">
@@ -301,7 +303,7 @@
 					<i class="fas fa-save"></i> Submit
 				</button>
 				<button id="btnPOEdit" type="button"
-					class="btn btn-primary btn-sm ml-1" onclick="buyerPoEditAction()"
+					class="btn btn-primary btn-sm ml-1" onclick="purchaseOrderEdit()"
 					disabled>
 					<i class="fa fa-pencil-square"></i> Edit
 				</button>

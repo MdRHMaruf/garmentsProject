@@ -9,11 +9,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
+import pg.model.commonModel;
 import pg.orderModel.BuyerPO;
 import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
+import pg.orderModel.PurchaseOrderItem;
 import pg.orderModel.Style;
+import pg.orderModel.accessorieIndent;
 import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.ItemDescription;
@@ -129,12 +132,12 @@ public class OrderDAOImpl implements OrderDAO{
 		}
 		return dataList;
 	}
-	
+
 	@Override
 	public List<Style> getStyleList() {
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		List<Style> datalist=new ArrayList<Style>();	
 		try{	
 			tx=session.getTransaction();
@@ -159,12 +162,12 @@ public class OrderDAOImpl implements OrderDAO{
 		}
 		return datalist;
 	}
-	
+
 	@Override
 	public List<ParticularItem> getTypeWiseParticularList(String type) {
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		List<ParticularItem> datalist=new ArrayList<ParticularItem>();	
 		try{	
 			tx=session.getTransaction();
@@ -175,7 +178,7 @@ public class OrderDAOImpl implements OrderDAO{
 			}else {
 				sql="select AutoId,Name,UserId from TbParticularItemInfo order by Name";
 			}
-					
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
@@ -283,7 +286,7 @@ public class OrderDAOImpl implements OrderDAO{
 					+ "SubmissionDate = '"+costing.getDate()+"',"
 					+ "EntryTime = CURRENT_TIMESTAMP,"
 					+ "UserId='"+costing.getUserId()+"' where autoId='"+costing.getAutoId()+"';";
-					
+
 			session.createSQLQuery(sql).executeUpdate();
 			tx.commit();
 			return true;
@@ -313,7 +316,7 @@ public class OrderDAOImpl implements OrderDAO{
 			tx=session.getTransaction();
 			tx.begin();
 			String sql="delete from TbCostingCreate where autoId='"+autoId+"';";
-					
+
 			session.createSQLQuery(sql).executeUpdate();
 			tx.commit();
 			return true;
@@ -343,7 +346,7 @@ public class OrderDAOImpl implements OrderDAO{
 		try{
 			tx=session.getTransaction();
 			tx.begin();
-			
+
 			String sql="select cc.AutoId,cc.StyleId,sc.StyleNo,cc.ItemId,id.itemname,cc.GroupType,cc.FabricationItemId,ISNULL(fi.ItemName,pi.Name) as particula,isnull(si.size,'')as size,cc.UnitId,cc.width,cc.yard,cc.gsm,cc.consumption,cc.UnitPrice,cc.amount,cc.Comission,(select convert(varchar,cc.SubmissionDate,103))as date,cc.UserId \r\n" + 
 					"from TbCostingCreate cc\r\n" + 
 					"left join TbStyleCreate sc\r\n" + 
@@ -357,16 +360,16 @@ public class OrderDAOImpl implements OrderDAO{
 					"left join TbParticularItemInfo pi\r\n" + 
 					"on cc.FabricationItemId = pi.AutoId and cc.GroupType='2' \r\n"+
 					"where cc.styleId='"+oldStyleId+"' and cc.itemId='"+oldItemId+"'";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
 				Object[] element = (Object[]) iter.next();
 				String date[] = element[17].toString().split("/");
-				
+
 				datalist.add(new Costing(element[0].toString(), element[1].toString(), element[2].toString(), element[3].toString(), element[4].toString(),element[5].toString(), element[6].toString(), element[7].toString(), element[8].toString(), element[9].toString(), Double.valueOf(element[10].toString()), Double.valueOf(element[11].toString()), Double.valueOf(element[12].toString()),Double.valueOf(element[13].toString()), Double.valueOf(element[14].toString()), Double.valueOf(element[15].toString()), Double.valueOf(element[16].toString()), date[2]+"-"+date[1]+"-"+date[1], element[18].toString()));				
 			}
-			
+
 			for (Costing costing : datalist) {
 				sql="insert into TbCostingCreate ("
 						+ "StyleId,"
@@ -405,7 +408,7 @@ public class OrderDAOImpl implements OrderDAO{
 						+ "'"+userId+"')";
 				session.createSQLQuery(sql).executeUpdate();
 			}
-			
+
 			tx.commit();
 			return true;
 		}
@@ -430,7 +433,7 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		List<Costing> datalist=new ArrayList<Costing>();	
 		try{	
 			tx=session.getTransaction();
@@ -448,12 +451,12 @@ public class OrderDAOImpl implements OrderDAO{
 					"left join TbParticularItemInfo pi\r\n" + 
 					"on cc.FabricationItemId = pi.AutoId and cc.GroupType='2' \r\n"+
 					"where cc.styleId='"+styleId+"' and cc.itemId='"+itemId+"'";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
 				Object[] element = (Object[]) iter.next();
-				
+
 				datalist.add(new Costing(element[0].toString(), element[1].toString(), element[2].toString(), element[3].toString(), element[4].toString(),element[5].toString(), element[6].toString(), element[7].toString(), element[8].toString(), element[9].toString(), Double.valueOf(element[10].toString()), Double.valueOf(element[11].toString()), Double.valueOf(element[12].toString()),Double.valueOf(element[13].toString()), Double.valueOf(element[14].toString()), Double.valueOf(element[15].toString()), Double.valueOf(element[16].toString()), element[17].toString(), element[18].toString()));				
 			}			
 			tx.commit();			
@@ -475,7 +478,7 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		List<Costing> datalist=new ArrayList<Costing>();	
 		try{	
 			tx=session.getTransaction();
@@ -487,7 +490,7 @@ public class OrderDAOImpl implements OrderDAO{
 					"left join tbItemDescription id\r\n" + 
 					"on cc.ItemId = id.itemid\r\n" + 
 					"group by cc.StyleId,sc.StyleNo,cc.ItemId,id.itemname,cc.SubmissionDate";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
@@ -513,7 +516,7 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		Costing costing=null;	
 		try{	
 			tx=session.getTransaction();
@@ -531,12 +534,12 @@ public class OrderDAOImpl implements OrderDAO{
 					"left join TbParticularItemInfo pi\r\n" + 
 					"on cc.FabricationItemId = pi.AutoId and cc.GroupType='2' \r\n"+
 					"where cc.autoId='"+autoId+"'";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
 				Object[] element = (Object[]) iter.next();
-				
+
 				costing = new Costing(element[0].toString(), element[1].toString(), element[2].toString(), element[3].toString(), element[4].toString(),element[5].toString(), element[6].toString(), element[7].toString(), element[8].toString(), element[9].toString(), Double.valueOf(element[10].toString()), Double.valueOf(element[11].toString()), Double.valueOf(element[12].toString()),Double.valueOf(element[13].toString()), Double.valueOf(element[14].toString()), Double.valueOf(element[15].toString()), Double.valueOf(element[16].toString()), element[17].toString(), element[18].toString());				
 			}			
 			tx.commit();			
@@ -611,7 +614,7 @@ public class OrderDAOImpl implements OrderDAO{
 
 			String sql="update TbBuyerOrderEstimateDetails set buyerId='"+buyerPoItem.getBuyerId()+"',BuyerOrderId='"+buyerPoItem.getBuyerPOId()+"',CustomerOrder='"+buyerPoItem.getCustomerOrder()+"',PurchaseOrder='"+buyerPoItem.getPurchaseOrder()+"',ShippingMarks='"+buyerPoItem.getShippingMark()+"',FactoryId='"+buyerPoItem.getShippingMark()+"',StyleId='"+buyerPoItem.getStyleId()+"',ItemId='"+buyerPoItem.getItemId()+"',ColorId='"+buyerPoItem.getColorId()+"',SizeReg='',sizeGroupId='"+buyerPoItem.getSizeGroupId()+"',TotalUnit='"+buyerPoItem.getTotalUnit()+"',UnitCmt='"+buyerPoItem.getUnitCmt()+"',TotalPrice='"+buyerPoItem.getTotalPrice()+"',UnitFob='"+buyerPoItem.getUnitFob()+"',TotalAmount='"+buyerPoItem.getTotalAmount()+"',EntryTime=CURRENT_TIMESTAMP,UserId='"+buyerPoItem.getUserId()+"' where autoId='"+buyerPoItem.getAutoId()+"'";		
 			session.createSQLQuery(sql).executeUpdate();
-			
+
 			sql = "delete from tbBuyerOrderEstimateSize where orderItemId='"+buyerPoItem.getAutoId()+"'";
 			session.createSQLQuery(sql).executeUpdate();
 
@@ -1158,13 +1161,13 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		boolean exist = false;
 		try{	
 			tx=session.getTransaction();
 			tx.begin();	
 			String sql="select id,PurchaseOrder,styleId,itemid,itemcolor,fabricsid,qty,dozenqty,consumption from tbRequiredFabrics rf where PurchaseOrder='"+fabricsIndent.getPurchaseOrder()+"' and styleId='"+fabricsIndent.getStyleId()+"' and itemid='"+fabricsIndent.getItemId()+"' and itemcolor = '"+fabricsIndent.getItemColorId()+"' and fabricsid='"+fabricsIndent.getFabricsId()+"' and id != '"+fabricsIndent.getAutoId()+"'";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			if(list.size()>0) {
 				exist = true;
@@ -1188,20 +1191,20 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		FabricsIndent indent= null;
 		try{	
 			tx=session.getTransaction();
 			tx.begin();	
 			String sql="select id,PurchaseOrder,styleId,itemid,itemcolor,fabricsid,qty,dozenqty,consumption,inPercent,PercentQty,TotalQty,unitId,width,Yard,GSM,fabricscolor,brand,entryby from tbRequiredFabrics rf where id = '"+indentId+"'";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
 				Object[] element = (Object[]) iter.next();
-				
+
 				indent = new FabricsIndent(element[0].toString(), element[1].toString(), element[2].toString(), element[3].toString(), element[4].toString(), element[5].toString(), Double.valueOf(element[6].toString()),  Double.valueOf(element[7].toString()),  Double.valueOf(element[8].toString()),  Double.valueOf(element[9].toString()),  Double.valueOf(element[10].toString()),  Double.valueOf(element[11].toString()),  element[12].toString(),  Double.valueOf(element[13].toString()),  Double.valueOf(element[14].toString()),  Double.valueOf(element[15].toString()), 0.0, element[16].toString(),  element[17].toString(),  element[18].toString());
-						
+
 			}			
 			tx.commit();			
 		}	
@@ -1222,7 +1225,7 @@ public class OrderDAOImpl implements OrderDAO{
 		// TODO Auto-generated method stub
 		Session session=HibernateUtil.openSession();
 		Transaction tx=null;
-		
+
 		List<FabricsIndent> datalist=new ArrayList<FabricsIndent>();	
 		try{	
 			tx=session.getTransaction();
@@ -1240,7 +1243,7 @@ public class OrderDAOImpl implements OrderDAO{
 					"left join tbunits u\r\n" + 
 					"on rf.unitId = u.Unitid\r\n" + 
 					"order by rf.id desc";
-				
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
@@ -1292,6 +1295,960 @@ public class OrderDAOImpl implements OrderDAO{
 		return qty;
 	}
 
+
+	@Override
+	public String maxAIno() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		String query="";
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select isnull(max(AINo),0)+1 as AINo from tbAccessoriesIndent";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				//Object[] element = (Object[]) iter.next();
+
+				query=iter.next().toString();
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> PurchaseOrders() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select BuyerOrderId,PurchaseOrder from TbBuyerOrderEstimateDetails group by BuyerOrderId,PurchaseOrder";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+
+	@Override
+	public List<commonModel> Colors(String style, String item) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			//String sql="select ColorId, Colorname from tbColors";
+			String sql="SELECT ColorId, (select colorname from tbColors b where b.colorid=a.ColorId) FROM  TbBuyerOrderEstimateDetails a WHERE  StyleId = '"+style+"' and itemid='"+item+"'";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> Items(String buyerorderid,String style) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select itemid, isnull((select itemname from tbItemDescription where itemid=a.ItemId),'') as itemname from TbBuyerOrderEstimateDetails a where a.BuyerOrderId='"+buyerorderid+"' and a.styleid='"+style+"' group by a.ItemId";
+			//System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> AccessoriesItem() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select itemid, itemname from TbAccessoriesItem";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> Size(String buyerorderid, String style, String item, String color) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select (select id from tbStyleSize where id=a.sizeId) as id,(select sizename from tbStyleSize where id=a.sizeId) as name from TbBuyerOrderEstimateDetails b, tbBuyerOrderEstimateSize  a where a.orderitemid=b.autoId and b.buyerorderid='"+buyerorderid+"' and b.StyleId='"+style+"' and b.ItemId='"+item+"' and b.colorId='"+color+"'";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> Unit() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select cast(unitvalue as Integer) as unitValue,unitName from tbunits";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> Brands() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select id, name from tbbrands";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> ShippingMark(String po, String style, String item) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select shippingmarks from TbBuyerOrderEstimateDetails where BuyerOrderId='"+po+"' and StyleId='"+style+"' and ItemId='"+item+"' group by shippingmarks";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				//Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel("",iter.next().toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> AllColors() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select ColorId, Colorname from tbColors";
+			System.out.println(" all colors ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> SizewiseQty(String buyerorderid,String style,String item,String color,String size) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+			String sql="";
+			if (size.equals("None")) {
+				sql="select isnull(sum(sizeQuantity),0) as qty from TbBuyerOrderEstimateDetails b, tbBuyerOrderEstimateSize  a where a.orderitemid=b.autoid and b.buyerorderid='"+buyerorderid+"' and b.StyleId='"+style+"' and b.ItemId='"+item+"' and b.colorId='"+color+"' ";
+
+			}
+			else {
+				sql="select isnull(sum(sizeQuantity),0) as qty from TbBuyerOrderEstimateDetails b, tbBuyerOrderEstimateSize  a where a.orderitemid=b.autoid and b.buyerorderid='"+buyerorderid+"' and b.StyleId='"+style+"' and b.ItemId='"+item+"' and b.colorId='"+color+"' and a.sizeId='"+size+"'";
+			}
+
+			System.out.println(sql);
+			List<?> list = session.createSQLQuery(sql).list();
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				query.add(new commonModel(iter.next().toString()));
+			}
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+
+	@Override
+	public boolean insertaccessoriesIndent(accessorieIndent ai) {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		boolean inserted=false;
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+
+			String sql="insert into tbAccessoriesIndent (styleid, PurchaseOrder, "
+					+ "Itemid, ColorId, "
+					+ "ShippingMarks, accessoriesItemId, "
+					+ "accessoriesSize, "
+					+ "size, PerUnit, TotalBox,"
+					+ " OrderQty, QtyInDozen, "
+					+ "ReqPerPices, ReqPerDoz, "
+					+ "DividedBy, PercentageExtra, "
+					+ "PercentageExtraQty, TotalQty, "
+					+ "UnitId, RequireUnitQty, "
+					+ "IndentColorId, IndentBrandId, IndentDate, "
+					+ " IndentTime, IndentPostBy) values('"+ai.getStyle()+"','"+ai.getPo()+"','"+ai.getItemname()+"',"
+					+ "'"+ai.getItemcolor()+"','"+ai.getShippingmark()+"','"+ai.getAccessoriesname()+"','"+ai.getAccessoriessize()+"',"
+					+ "'"+ai.getSize()+"','"+ai.getPerunit()+"','"+ai.getTotalbox()+"','"+ai.getOrderqty()+"','"+ai.getQtyindozen()+"',"
+					+ "'"+ai.getReqperpcs()+"','"+ai.getReqperdozen()+"','"+ai.getDividedby()+"','"+ai.getExtrainpercent()+"','"+ai.getPercentqty()+"',"
+					+ "'"+ai.getTotalqty()+"','"+ai.getUnit()+"','"+ai.getGrandqty()+"','"+ai.getAccessoriescolor()+"','"+ai.getBrand()+"',GETDATE(),GETDATE(),'"+ai.getUser()+"')";
+
+			System.out.println(" all colors ");
+
+			session.createSQLQuery(sql).executeUpdate();
+			inserted=true;
+
+
+
+
+
+
+			tx.commit();
+
+			return inserted;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return inserted;
+
+	}
+
+	@Override
+	public List<accessorieIndent> PendingList() {
+		// TODO Auto-generated method stub
+
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<accessorieIndent> query=new ArrayList<accessorieIndent>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select AccIndentId,styleid,PurchaseOrder,(select itemname from tbItemDescription where itemid=a.Itemid) as itemname,(select colorname from tbColors where ColorId=a.ColorId) as color, (select itemname from TbAccessoriesItem where itemid=a.accessoriesItemId) as accessoriesitem,(select b.sizeName from tbStyleSize b where b.id=a.accessoriesSize) as accessoriessize, a.RequireUnitQty  from tbAccessoriesIndent a where AINo is null";
+
+			System.out.println(" all colors ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				//	query.add(new accessorieIndent(element[0].toString(),element[1].toString(),element[2].toString(),element[3].toString(),element[4].toString(),element[5].toString(),element[6].toString(),element[7].toString()));
+
+			}
+
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+
+	}
+
+	@Override
+	public List<commonModel> Styles(String po) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select styleid, (select StyleNo from TbStyleCreate where StyleId=a.StyleId) as stylename from TbBuyerOrderEstimateDetails a where BuyerOrderId='"+po+"' group by StyleId";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+	}
+
+	
+
+	@Override
+	public List<commonModel> styleItemsWiseColor(String buyerorderid,String style,String item) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select a.ColorId,(select Colorname from tbColors where ColorId=a.ColorId) as ColorName from TbBuyerOrderEstimateDetails a where a.BuyerOrderId='"+buyerorderid+"' and a.StyleId='"+style+"' and a.ItemId='"+item+"' group by a.ColorId";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new commonModel(element[0].toString(),element[1].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+	}
+
+	@Override
+	public List<accessorieIndent> getAccessoriesIndent(String po, String style, String itemname, String itemcolor) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<accessorieIndent> query=new ArrayList<accessorieIndent>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select a.AccIndentId,a.PurchaseOrder,(select StyleNo from TbStyleCreate where StyleId=a.StyleId) as StyleNo,(select ItemName from tbItemDescription where itemid=a.ItemId) as ItemName,(select ColorName from tbColors where ColorId=a.ColorId) as ColorName,a.ShippingMarks,(select itemname from TbAccessoriesItem where itemid=a.accessoriesItemId) as AccessoriesName,isnull((select sizeName from tbStyleSize where id=a.size),'') as SizeName,a.RequireUnitQty from tbAccessoriesIndent a where a.PurchaseOrder='"+po+"' and a.StyleId='"+style+"' and a.ItemId='"+itemname+"' and a.ColorId='"+itemcolor+"'";
+			System.out.println(" max ");
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new accessorieIndent(element[0].toString(),element[1].toString(),element[2].toString(),element[3].toString(),element[4].toString(),element[5].toString(),element[6].toString(),element[7].toString(),element[8].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+	}
+
+	@Override
+	public List<accessorieIndent> getPendingAccessoriesIndent() {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<accessorieIndent> query=new ArrayList<accessorieIndent>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select a.AccIndentId,a.PurchaseOrder,(select StyleNo from TbStyleCreate where StyleId=a.StyleId) as StyleNo,(select ItemName from tbItemDescription where itemid=a.ItemId) as ItemName,(select ColorName from tbColors where ColorId=a.ColorId) as ColorName,a.ShippingMarks,(select itemname from TbAccessoriesItem where itemid=a.accessoriesItemId) as AccessoriesName,(select sizeName from tbStyleSize where id=a.size) as SizeName,a.RequireUnitQty from tbAccessoriesIndent a where a.AINo IS NULL";
+
+
+			List<?> list = session.createSQLQuery(sql).list();
+
+
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+
+				query.add(new accessorieIndent(element[0].toString(),element[1].toString(),element[2].toString(),element[3].toString(),element[4].toString(),element[5].toString(),element[6].toString(),element[7].toString(),element[8].toString()));
+
+			}
+
+
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+	}
+
+	@Override
+	public List<accessorieIndent> getAccessoriesIndentItemDetails(String id) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<accessorieIndent> query=new ArrayList<accessorieIndent>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="select a.AccIndentId,a.PurchaseOrder,a.StyleId,a.ItemId,a.ColorId,a.ShippingMarks,(select itemname from TbAccessoriesItem where itemid=a.accessoriesItemId) as AccessoriesName,a.size,a.accessoriesSize,a.PerUnit,a.TotalBox,a.OrderQty,a.QtyInDozen,a.ReqPerPices,a.ReqPerDoz,a.DividedBy,a.PercentageExtra,a.PercentageExtraQty,a.TotalQty,(select UnitName from tbunits where UnitId=a.UnitId) as UnitName,a.RequireUnitQty,a.IndentBrandId,a.IndentColorId from tbAccessoriesIndent a where a.AccIndentId='"+id+"'";
+
+			List<?> list = session.createSQLQuery(sql).list();
+			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+			{	
+				Object[] element = (Object[]) iter.next();
+				query.add(new accessorieIndent(element[0].toString(),element[1].toString(),element[2].toString(),element[3].toString(),element[4].toString(),element[5].toString(),element[6].toString(),element[7].toString(),element[8].toString(),element[9].toString(),element[10].toString(),element[11].toString(),element[12].toString(),element[13].toString(),element[14].toString(),element[15].toString(),element[16].toString(),element[17].toString(),element[18].toString(),element[19].toString(),element[20].toString(),element[21].toString(),element[22].toString()));
+
+			}
+
+			tx.commit();
+
+			return query;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return query;
+	}
+
+	@Override
+	public boolean editaccessoriesIndent(accessorieIndent ai) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+
+			String sql="update tbAccessoriesIndent set  PerUnit='"+ai.getPerunit()+"',TotalBox='"+ai.getTotalbox()+"',OrderQty='"+ai.getOrderqty()+"',QtyInDozen='"+ai.getQtyindozen()+"',"
+					+ "ReqPerPices='"+ai.getReqperpcs()+"',ReqPerDoz='"+ai.getReqperdozen()+"',DividedBy='"+ai.getDividedby()+"',PercentageExtra='"+ai.getExtrainpercent()+"',PercentageExtraQty='"+ai.getPercentqty()+"',"
+					+ "TotalQty='"+ai.getTotalqty()+"',RequireUnitQty='"+ai.getGrandqty()+"',IndentColorId='"+ai.getAccessoriescolor()+"',IndentBrandId='"+ai.getBrand()+"',IndentDate=GETDATE(),IndentTime=GETDATE(),IndentPostBy='"+ai.getUser()+"' where AccIndentId='"+ai.getAutoid()+"'";
+
+			session.createSQLQuery(sql).executeUpdate();
+
+
+			tx.commit();
+
+			return true;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return false;
+
+	}
+
+	@Override
+	public boolean confrimAccessoriesIndent(String user, String aiNo) {
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+
+		List<commonModel> query=new ArrayList<commonModel>();
+
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+
+			String sql="update tbAccessoriesIndent set  AINo='"+aiNo+"',IndentPostBy='"+user+"' where AINo IS NULL";
+			session.createSQLQuery(sql).executeUpdate();
+			tx.commit();
+
+			return true;
+		}
+		catch(Exception e){
+
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+
+		finally {
+			session.close();
+		}
+
+		return false;
+
+	}
+	
+	
+	//Purchase Order
 	@Override
 	public List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder, String styleId, String type) {
 		// TODO Auto-generated method stub
@@ -1301,30 +2258,77 @@ public class OrderDAOImpl implements OrderDAO{
 		try{
 			tx=session.getTransaction();
 			tx.begin();
-			
+
 			String sql = "";
 			if(type.equals("1")) {
-				sql = "select a.itemid,a.itemname \r\n" + 
-						"from tbAccessoriesIndent ai \r\n" + 
-						"left join TbAccessoriesItem a \r\n" + 
-						"on ai.accessoriesItemId = a.itemid \r\n" + 
-						"where styleid='"+styleId+"'  group by a.itemid,a.itemname";
-			}else if(type.equals("2")) {
 				sql = "select fi.id,fi.ItemName \r\n" + 
 						"from tbrequiredfabrics rf \r\n" + 
 						"left join TbFabricsItem fi \r\n" + 
 						"on rf.itemid = fi.id \r\n" + 
 						"where styleid='"+styleId+"'  group by fi.id,fi.ItemName";
+			}else if(type.equals("2")) {
+				sql = "select a.itemid,a.itemname \r\n" + 
+						"from tbAccessoriesIndent ai \r\n" + 
+						"left join TbAccessoriesItem a \r\n" + 
+						"on ai.accessoriesItemId = a.itemid \r\n" + 
+						"where styleid='"+styleId+"'  group by a.itemid,a.itemname";
 			}else {
+				
 				return null;
 			}
-			
+
 			List<?> list = session.createSQLQuery(sql).list();
 			for(Iterator<?> iter = list.iterator(); iter.hasNext();)
 			{	
 				Object[] element = (Object[]) iter.next();
 				dataList.add(new AccessoriesItem(element[0].toString(), element[1].toString(), "", ""));
 			}
+			tx.commit();
+		}
+		catch(Exception e){
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+		return dataList;
+	}
+
+	@Override
+	public List<PurchaseOrderItem> getPurchaseOrderItemList(PurchaseOrderItem purchaseOrderItem) {
+		// TODO Auto-generated method stub
+		Session session=HibernateUtil.openSession();
+		Transaction tx=null;
+		List<PurchaseOrderItem> dataList=new ArrayList<PurchaseOrderItem>();
+		try{
+			tx=session.getTransaction();
+			tx.begin();
+			String sql;
+			if(purchaseOrderItem.getType().equals("1")) {
+				sql="select a.AccIndentId,a.accessoriesitemid, (select itemname from tbItemDescription where itemid=a.Itemid) as finisheditemname,(select colorname from tbcolors where ColorId=a.ColorId) as finisheditemcolor,(select itemname from tbaccessoriesItem where itemid=a.accessoriesItemId) as accessoriesname,(select colorname from tbcolors where ColorId=a.colorid) as accessoriescolor,a.size,(select ColorCode from tbcolors where ColorId=a.ColorId) as colorcode,(select name from tbSupplier where id=a.supplierid) as SupplierName,a.TotalQty,a.RequireUnitQty,(select unitName from tbunits where UnitId=a.UnitId) as UnitName,ISNULL(a.rate,0) as rate,ISNULL(a.amount,0) as amount,a.currency,a.poManual from tbAccessoriesIndent a where a.PurchaseOrder='"+purchaseOrderItem.getPurchaseOrder()+"' and a.styleid='"+purchaseOrderItem.getStyleId()+"' and a.accessoriesItemId='"+purchaseOrderItem.getIndentItemId()+"' and (poapproval IS NULL or poapproval='0')  order by a.AccIndentId";
+
+				List<?> list = session.createSQLQuery(sql).list();
+				for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+				{	
+					Object[] element = (Object[]) iter.next();
+					dataList.add(new PurchaseOrderItem(element[0].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), 0.0, 0.0, element[1].toString(), 0.0, element[1].toString()));
+				}
+			}else if(purchaseOrderItem.getType().equals("2")) {
+				sql="select a.AccIndentId,a.accessoriesitemid, (select itemname from tbItemDescription where itemid=a.Itemid) as finisheditemname,(select colorname from tbcolors where ColorId=a.ColorId) as finisheditemcolor,(select itemname from tbaccessoriesItem where itemid=a.accessoriesItemId) as accessoriesname,(select colorname from tbcolors where ColorId=a.colorid) as accessoriescolor,a.size,(select ColorCode from tbcolors where ColorId=a.ColorId) as colorcode,(select name from tbSupplier where id=a.supplierid) as SupplierName,a.TotalQty,a.RequireUnitQty,(select unitName from tbunits where UnitId=a.UnitId) as UnitName,ISNULL(a.rate,0) as rate,ISNULL(a.amount,0) as amount,a.currency,a.poManual from tbAccessoriesIndent a where a.PurchaseOrder='"+purchaseOrderItem.getPurchaseOrder()+"' and a.styleid='"+purchaseOrderItem.getStyleId()+"' and a.accessoriesItemId='"+purchaseOrderItem.getIndentItemId()+"' and (poapproval IS NULL or poapproval='0')  order by a.AccIndentId";
+
+				List<?> list = session.createSQLQuery(sql).list();
+				for(Iterator<?> iter = list.iterator(); iter.hasNext();)
+				{	
+					Object[] element = (Object[]) iter.next();
+					dataList.add(new PurchaseOrderItem(element[0].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), element[1].toString(), 0.0, 0.0, element[1].toString(), 0.0, element[1].toString()));
+				}
+			}else {
+				
+			}
+
 			tx.commit();
 		}
 		catch(Exception e){

@@ -1,5 +1,6 @@
 package pg.controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,11 +21,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import pg.model.commonModel;
 import pg.orderModel.BuyerPO;
 import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
+import pg.orderModel.PurchaseOrderItem;
 import pg.orderModel.Style;
+import pg.orderModel.accessorieIndent;
 import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Brand;
 import pg.registerModel.BuyerModel;
@@ -47,6 +52,8 @@ import pg.share.PaymentType;
 @Controller
 @RestController
 public class OrderController {
+	
+	DecimalFormat df = new DecimalFormat("#.00");
 
 	@Autowired
 	private OrderService orderService;
@@ -393,14 +400,392 @@ public class OrderController {
 	}
 
 	//Accessoires Indent Create
-	@RequestMapping(value = "/accessories_indent",method=RequestMethod.GET)
-	public ModelAndView accessories_indent(ModelMap map,HttpSession session) {
+		@RequestMapping(value = "/accessories_indent",method=RequestMethod.GET)
+		public ModelAndView accessories_indent(ModelMap map,HttpSession session) {
 
-		ModelAndView view = new ModelAndView("order/accessories_indent");
+			List<commonModel>purchaseorders=orderService.PurchaseOrders();
 
-		return view; //JSP - /WEB-INF/view/index.jsp
-	}
+			List<accessorieIndent>listAccPending=orderService.getPendingAccessoriesIndent();
+			
+			List<commonModel>accessoriesitem=orderService.AccessoriesItem();
 
+			List<commonModel>unit=orderService.Unit();
+			List<commonModel>brand=orderService.Brands();
+			List<commonModel>color=orderService.AllColors();
+			ModelAndView view = new ModelAndView("order/accessories_indent");
+			view.addObject("purchaseorders",purchaseorders);
+			view.addObject("accessories",accessoriesitem);
+			view.addObject("unit",unit);
+			view.addObject("brand",brand);
+			view.addObject("color",color);
+			
+			view.addObject("listAccPending",listAccPending);
+
+			return view; //JSP - /WEB-INF/view/index.jsp
+		}
+
+		@ResponseBody
+		@RequestMapping(value = "/maxAIno",method=RequestMethod.POST)
+		public String maxAIno( ) {
+			System.out.println(" maxAIno Id ");
+			String maxaino="";
+
+			maxaino=orderService.maxAIno();
+
+			return maxaino;
+
+		}
+
+		@ResponseBody
+		@RequestMapping(value = "/poWiseStyles/{po}",method=RequestMethod.POST)
+		public JSONObject poWiseStyles(@PathVariable ("po") String po) {
+			System.out.println(" powisestyles ");
+
+
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+			List<commonModel>styles=orderService.Styles(po);
+
+			for (int i = 0; i < styles.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("id", styles.get(i).getId());
+				obj.put("name", styles.get(i).getName());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("result", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+
+		@ResponseBody
+		@RequestMapping(value = "/stylewiseitems",method=RequestMethod.GET)
+		public JSONObject stylewiseitems(String buyerorderid,String style) {
+
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+			List<commonModel>items=orderService.Items(buyerorderid,style);
+
+			for (int i = 0; i < items.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("id", items.get(i).getId());
+				obj.put("name", items.get(i).getName());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("result", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+
+
+		@ResponseBody
+		@RequestMapping(value = "/styleItemsWiseColor",method=RequestMethod.GET)
+		public JSONObject styleItemsWiseColor(String buyerorderid,String style,String item) {
+			System.out.println(" stylewisei items ");
+
+
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+			System.out.println("item "+item);
+
+			List<commonModel>items=orderService.styleItemsWiseColor(buyerorderid,style,item);
+
+			for (int i = 0; i < items.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("id", items.get(i).getId());
+				obj.put("name", items.get(i).getName());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("result", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+
+		@ResponseBody
+		@RequestMapping(value = "/shippingMark/{po}/{style}/{item}",method=RequestMethod.POST)
+		public List purchaseOrders(@PathVariable ("po") String po,@PathVariable ("style") String style,@PathVariable ("item") String item) {
+			System.out.println(" shippingmarks ");
+
+			List<commonModel>shippingMarks=orderService.ShippingMark(po, style, item);
+
+
+
+			return shippingMarks;
+
+		}
+		
+		@ResponseBody
+		@RequestMapping(value = "/styleitemColorWiseSize",method=RequestMethod.GET)
+		public JSONObject itemWiseSize(String buyerorderid,String style,String item,String color) {
+
+			System.out.println("size");
+			
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+			List<commonModel>sizes=orderService.Size(buyerorderid, style,item,color);
+
+			for (int i = 0; i < sizes.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("id", sizes.get(i).getId());
+				obj.put("name", sizes.get(i).getName());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("size", mainarray);
+			return objmain;
+
+		}
+		
+		@ResponseBody
+		@RequestMapping(value = "/styleitemColorWiseOrderQty",method=RequestMethod.GET)
+		public JSONObject styleitemColorWiseOrderQty(String buyerorderid,String style,String item,String color,String size) {
+
+			
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+			List<commonModel>sizes=orderService.SizewiseQty(buyerorderid, style,item,color,size);
+
+			for (int i = 0; i < sizes.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("qty", sizes.get(i).getQty());
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("size", mainarray);
+			return objmain;
+
+		}
+
+
+		@ResponseBody
+		@RequestMapping(value = "/itemWiseColor/{style}/{item}",method=RequestMethod.POST)
+		public JSONObject itemWiseColor(@PathVariable ("style") String style,@PathVariable ("item") String item) {
+			System.out.println(" Purchase Orders ");
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+
+
+
+			List<commonModel>colors=orderService.Colors(style, item);
+
+			for (int i = 0; i < colors.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("id", colors.get(i).getId());
+				obj.put("name", colors.get(i).getName());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("color", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+
+
+		@ResponseBody
+		@RequestMapping(value = "/SizeWiseQty/{style}/{item}/{size}/{color}/{type}",method=RequestMethod.POST)
+		public JSONObject SizeWiseQty(@PathVariable ("style") String style,@PathVariable ("item") String item,@PathVariable ("size") String size,@PathVariable ("color") String color,@PathVariable ("type") String type) {
+			System.out.println(" Purchase Orders ");
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+
+
+
+
+			List<commonModel>qty=orderService.SizewiseQty(style,item,size,color,type);
+
+			for (int i = 0; i < qty.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+
+				obj.put("name", qty.get(i).getQty());
+
+				mainarray.add(obj);
+
+			}
+
+			objmain.put("size", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+
+
+		@ResponseBody
+		@RequestMapping(value = "/insertAccessoriesIndent",method=RequestMethod.POST)
+		public JSONObject insertAccessoriesIndent(accessorieIndent v) {
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+			boolean insert= orderService.insertaccessoriesIndent(v);
+			
+			if(insert) {
+				List<accessorieIndent>qty=orderService.getAccessoriesIndent(v.getPo(),v.getStyle(),v.getItemname(),v.getItemcolor());
+				
+				for (int i = 0; i < qty.size(); i++) {
+					JSONObject obj=new JSONObject();
+
+					obj.put("autoId", qty.get(i).getAutoid());
+					obj.put("po", qty.get(i).getPo());
+					obj.put("style", qty.get(i).getStyle());
+					obj.put("itemname", qty.get(i).getItemname());
+					obj.put("itemcolor", qty.get(i).getItemcolor());
+					obj.put("shippingmark", qty.get(i).getShippingmark());
+					obj.put("accessoriesName", qty.get(i).getAccessoriesName());
+					obj.put("sizeName", qty.get(i).getSizeName());
+					obj.put("requiredUnitQty", qty.get(i).getRequiredUnitQty());
+					mainarray.add(obj);
+
+				}
+				
+				objmain.put("result", mainarray);
+				System.out.println(" obj main "+objmain);
+
+				return objmain;
+			}
+			else {
+				return null;
+			}
+
+		}
+		
+		@ResponseBody
+		@RequestMapping(value = "/confrimAccessoriesIndent",method=RequestMethod.POST)
+		public String confrimAccessoriesIndent(String user,String aiNo) {
+			String msg="Create Occured while cofrim accessories indent";
+			
+			boolean update= orderService.confrimAccessoriesIndent(user,aiNo);
+			if(update){
+				msg="Update Accessories successfully Confrimed";
+			}
+			
+			return msg;
+		}
+		
+		@ResponseBody
+		@RequestMapping(value = "/editAccessoriesIndent",method=RequestMethod.POST)
+		public String editAccessoriesIndent(accessorieIndent v) {
+			//JSONObject objmain = new JSONObject();
+			//JSONArray mainarray = new JSONArray();
+			String msg="Create Occured while updating accessories indent";
+			boolean update= orderService.editaccessoriesIndent(v);
+			if(update) {
+				msg="Update Accessories successfully";
+			}
+	/*		if(insert) {
+				List<accessorieIndent>qty=orderService.getAccessoriesIndent(v.getPo(),v.getStyle(),v.getItemname(),v.getItemcolor());
+				
+				for (int i = 0; i < qty.size(); i++) {
+					JSONObject obj=new JSONObject();
+
+					obj.put("autoId", qty.get(i).getAutoid());
+					obj.put("po", qty.get(i).getPo());
+					obj.put("style", qty.get(i).getStyle());
+					obj.put("itemname", qty.get(i).getItemname());
+					obj.put("itemcolor", qty.get(i).getItemcolor());
+					obj.put("shippingmark", qty.get(i).getShippingmark());
+					obj.put("accessoriesName", qty.get(i).getAccessoriesName());
+					obj.put("sizeName", qty.get(i).getSizeName());
+					obj.put("requiredUnitQty", qty.get(i).getRequiredUnitQty());
+					mainarray.add(obj);
+
+				}
+				
+				objmain.put("result", mainarray);
+				System.out.println(" obj main "+objmain);
+
+				return objmain;
+			}
+			else {
+				return null;
+			}*/
+
+			return msg;
+		}
+		
+		
+		@ResponseBody
+		@RequestMapping(value = "/accessoriesItemSet/{id}",method=RequestMethod.GET)
+		public JSONObject accessoriesItemSet(@PathVariable ("id") String id) {
+			JSONObject objmain = new JSONObject();
+			JSONArray mainarray = new JSONArray();
+			
+			List<accessorieIndent>list=orderService.getAccessoriesIndentItemDetails(id);
+			
+			for (int i = 0; i < list.size(); i++) {
+				JSONObject obj=new JSONObject();
+
+				obj.put("autoid", list.get(i).getAutoid());
+				obj.put("po", list.get(i).getPo());
+				obj.put("style", list.get(i).getStyle());
+				obj.put("itemname", list.get(i).getItemname());
+				obj.put("itemcolor", list.get(i).getItemcolor());
+				obj.put("shippingmark", list.get(i).getShippingmark());
+				obj.put("accessoriesname", list.get(i).getAccessoriesName());
+				obj.put("sizeName", list.get(i).getSizeName());
+				
+				System.out.println("itemcolor "+list.get(i).getItemcolor());
+				obj.put("accessoriessize", list.get(i).getAccessoriessize());
+				obj.put("perunit",df.format(Double.parseDouble( list.get(i).getPerunit())));
+				obj.put("totalbox", df.format(Double.parseDouble(list.get(i).getTotalbox())));
+				obj.put("orderqty", df.format(Double.parseDouble(list.get(i).getOrderqty())));
+				obj.put("qtyindozen", df.format(Double.parseDouble(list.get(i).getQtyindozen())));
+				obj.put("reqperpcs", df.format(Double.parseDouble(list.get(i).getReqperpcs())));
+				obj.put("reqperdozen", df.format(Double.parseDouble(list.get(i).getReqperdozen())));
+				obj.put("dividedby", df.format(Double.parseDouble(list.get(i).getDividedby())));
+				obj.put("extrainpercent", df.format(Double.parseDouble(list.get(i).getExtrainpercent())));
+				obj.put("percentqty", df.format(Double.parseDouble(list.get(i).getPercentqty())));
+				obj.put("totalqty", df.format(Double.parseDouble(list.get(i).getTotalqty())));
+				obj.put("unit", list.get(i).getUnit());
+				obj.put("requiredUnitQty", df.format(Double.parseDouble(list.get(i).getRequiredUnitQty())));
+				obj.put("indentBrandId", list.get(i).getIndentBrandId());
+				obj.put("indentColorId", list.get(i).getIndentColorId());
+				
+				obj.put("indentColorId", list.get(i).getIndentColorId());
+				
+				mainarray.add(obj);
+
+			}
+			
+			objmain.put("result", mainarray);
+			System.out.println(" obj main "+objmain);
+
+			return objmain;
+
+		}
+		
 	//Fabrics Indent 
 	@RequestMapping(value = "/fabrics_indent",method=RequestMethod.GET)
 	public ModelAndView fabrics_indent(ModelMap map,HttpSession session) {
@@ -522,6 +907,12 @@ public class OrderController {
 		return objmain;
 	}
 	
-
+	@RequestMapping(value = "/addIndentItem",method=RequestMethod.GET)
+	public @ResponseBody JSONObject addIndentItem(PurchaseOrderItem purchaseOrderItem) {
+		JSONObject objmain = new JSONObject();
+		List<PurchaseOrderItem> poItemList = orderService.getPurchaseOrderItemList(purchaseOrderItem);
+		objmain.put("poItemList", poItemList);
+		return objmain;
+	}
 
 }

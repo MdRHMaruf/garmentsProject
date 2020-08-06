@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pg.dao.OrderDAO;
+import pg.model.commonModel;
 import pg.orderModel.BuyerPO;
 import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
 import pg.orderModel.FabricsIndent;
+import pg.orderModel.PurchaseOrderItem;
 import pg.orderModel.Style;
+import pg.orderModel.accessorieIndent;
 import pg.registerModel.AccessoriesItem;
 import pg.registerModel.Color;
 import pg.registerModel.ItemDescription;
@@ -208,6 +211,133 @@ public class OrderServiceImpl implements OrderService{
 	public List<AccessoriesItem> getTypeWiseIndentItems(String purchaseOrder, String styleId, String type) {
 		// TODO Auto-generated method stub
 		return orderDAO.getTypeWiseIndentItems(purchaseOrder, styleId, type);
+	}
+
+	@Override
+	public List<PurchaseOrderItem> getPurchaseOrderItemList(PurchaseOrderItem purchaseOrderItem) {
+		// TODO Auto-generated method stub
+		return orderDAO.getPurchaseOrderItemList(purchaseOrderItem);
+	}
+	
+	//Accessories Indent
+	@Override
+	public String maxAIno() {
+		// TODO Auto-generated method stub
+		return orderDAO.maxAIno();
+	}
+
+	@Override
+	public List<commonModel> PurchaseOrders() {
+		// TODO Auto-generated method stub
+		return orderDAO.PurchaseOrders();
+	}
+
+	@Override
+	public List<commonModel> Styles(String po) {
+		// TODO Auto-generated method stub
+		return orderDAO.Styles(po);
+	}
+
+	@Override
+	public List<commonModel> Colors(String style, String item) {
+		// TODO Auto-generated method stub
+		return orderDAO.Colors(style, item);
+	}
+
+	@Override
+	public List<commonModel> Items(String buyerorderid,String style) {
+		// TODO Auto-generated method stub
+		return orderDAO.Items(buyerorderid,style);
+	}
+
+	@Override
+	public List<commonModel> AccessoriesItem() {
+		// TODO Auto-generated method stub
+		return orderDAO.AccessoriesItem();
+	}
+
+	@Override
+	public List<commonModel> Size(String buyerorderid, String style, String item, String color) {
+		// TODO Auto-generated method stub
+		return orderDAO.Size(buyerorderid, style, item, color);
+	}
+
+	@Override
+	public List<commonModel> Unit() {
+		// TODO Auto-generated method stub
+		return orderDAO.Unit();
+	}
+
+	@Override
+	public List<commonModel> Brands() {
+		// TODO Auto-generated method stub
+		return orderDAO.Brands();
+	}
+
+	@Override
+	public List<commonModel> ShippingMark(String po, String style, String item) {
+		// TODO Auto-generated method stub
+		return orderDAO.ShippingMark(po, style, item);
+	}
+
+	@Override
+	public List<commonModel> AllColors() {
+		// TODO Auto-generated method stub
+		return orderDAO.AllColors();
+	}
+
+	@Override
+	public List<commonModel> SizewiseQty(String buyerorderid, String style,String item,String color,String size) {
+		// TODO Auto-generated method stub
+		return orderDAO.SizewiseQty(buyerorderid, style, item, color, size);
+	}
+
+	@Override
+	public boolean insertaccessoriesIndent(accessorieIndent ai) {
+		// TODO Auto-generated method stub
+		return orderDAO.insertaccessoriesIndent(ai);
+	}
+
+	@Override
+	public List<accessorieIndent> PendingList() {
+		// TODO Auto-generated method stub
+		return orderDAO.PendingList();
+	}
+
+	@Override
+	public List<commonModel> styleItemsWiseColor(String buyerorderid, String style, String item) {
+		// TODO Auto-generated method stub
+		return orderDAO.styleItemsWiseColor(buyerorderid, style, item);
+	}
+
+	@Override
+	public List<accessorieIndent> getAccessoriesIndent(String po, String style, String itemname, String itemcolor) {
+		// TODO Auto-generated method stub
+		return orderDAO.getAccessoriesIndent(po, style, itemname, itemcolor);
+	}
+
+	@Override
+	public List<accessorieIndent> getPendingAccessoriesIndent() {
+		// TODO Auto-generated method stub
+		return orderDAO.getPendingAccessoriesIndent();
+	}
+
+	@Override
+	public List<accessorieIndent> getAccessoriesIndentItemDetails(String id) {
+		// TODO Auto-generated method stub
+		return orderDAO.getAccessoriesIndentItemDetails(id);
+	}
+
+	@Override
+	public boolean editaccessoriesIndent(accessorieIndent v) {
+		// TODO Auto-generated method stub
+		return orderDAO.editaccessoriesIndent(v);
+	}
+
+	@Override
+	public boolean confrimAccessoriesIndent(String user, String aiNo) {
+		// TODO Auto-generated method stub
+		return orderDAO.confrimAccessoriesIndent(user, aiNo);
 	}
 
 }

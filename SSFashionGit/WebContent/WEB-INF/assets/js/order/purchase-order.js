@@ -41,6 +41,10 @@ function typeWiseIndentItemLoad(){
   var styleId = $("#styleNo").val();
   if(type != "0"){ 
     if(type == "3"){
+      var options = "<option id='indentItem' value='0' selected>--Select Indent Item--</option>";
+      document.getElementById("indentItem").innerHTML = options;
+      $('#indentItem').selectpicker('refresh');
+      $('#indentItem').val(0).change();
 
     }else{
       $.ajax({
@@ -77,60 +81,36 @@ function typeWiseIndentItemLoad(){
   }
 }
 
-function itemSizeAdd() {
+function indentItemAdd() {
 
-  var buyerPOId = $("#buyerPOId").val();
-  var buyerId = $("#buyerName").val();
-  var styleId = $("#styleNo").val();
-  var itemId = $("#itemType").val();
-  var factoryId = $("#factory").val();
-  var colorId = $("#color").val();
-  var sizeGroupId = $("#sizeGroup").val();
-  var customerOrder = $("#customerOrder").val();
   var purchaseOrder = $("#purchaseOrder").val();
-  var shippingMark = $("#shippingMark").val();
+  var styleId = $("#styleNo").val();
+  var type = $("#type").val();
+  var itemId = $("#indentItem").val();
+  var supplierId = $("#supplierName").val();
+  var rate = $("#rate").val();
+  var dollar = $("#dollar").val();
   var userId = $("#userId").val();
-  var totalUnit = 0;
 
 
-  if (buyerId != 0) {
+  if (purchaseOrder != 0) {
     if (styleId != 0) {
       if (itemId != 0) {
-        if (factoryId != 0) {
-          if (colorId != 0) {
-            if (sizeGroupId != 0) {
-              var sizeListLength = $(".sizeValue").length;
-              var sizeList = "";
-              for (var i = 0; i < sizeListLength; i++) {
-                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
-                var id = $("#sizeId" + i).val().trim();
-                sizeList += "id=" + id + ",quantity=" + quantity + " ";
-                totalUnit += Number(quantity);
-              }
-
-
+        if (supplierId != 0) {
+          if (rate != '') {
+            if (dollar != '') {
               $.ajax({
-                type: 'POST',
+                type: 'GET',
                 dataType: 'json',
-                url: './addItemToBuyerPO',
+                url: './addIndentItem',
                 data: {
-                  autoId: "0",
-                  buyerPOId: buyerPOId,
-                  buyerId: buyerId,
-                  styleId: styleId,
-                  itemId: itemId,
-                  factoryId: factoryId,
-                  colorId: colorId,
-                  customerOrder: customerOrder,
                   purchaseOrder: purchaseOrder,
-                  shippingMark: shippingMark,
-                  sizeGroupId: sizeGroupId,
-                  sizeListString: sizeList,
-                  totalUnit: totalUnit,
-                  unitCmt: 1,
-                  totalPrice: 1,
-                  unitFob: 1,
-                  totalAmount: 1,
+                  styleId: styleId,
+                  type : type,
+                  indentItemId: itemId,
+                  supplierId : supplierId,
+                  rate : rate,
+                  dollar : dollar,
                   userId: userId
                 },
                 success: function (data) {
@@ -139,129 +119,34 @@ function itemSizeAdd() {
                   } else if (data.result == "duplicate") {
                     dangerAlert("Duplicate Item Name..This Item Name Already Exist")
                   } else {
-                    drawItemTable(data.result);
+                    
                   }
                 }
               });
 
             } else {
-              warningAlert("Size Group not selected ... Please Select Size group");
-              $("#sizeGroup").focus();
+              warningAlert("Dollar amount in empty... Please enter dollar amount");
+              $("#dollar").focus();
             }
           } else {
-            warningAlert("Color Not Selected... Please Select Color");
-            $("#color").focus();
+            warningAlert("Rate is empty... Please enter Rate amount");
+            $("#rate").focus();
           }
         } else {
-          warningAlert("Factory not selected... Please Select Factory Name");
-          $("#factoryId").focus();
+          warningAlert("supplierName not selected... Please Select Supplier Name");
+          $("#supplierName").focus();
         }
       } else {
-        warningAlert("Item Type not selected... Please Select Item Type");
-        $("#itemType").focus();
+        warningAlert("indent Item not selected... Please Select Indent Item");
+        $("#indentItem").focus();
       }
     } else {
       warningAlert("Style No not selected... Please Select Style No");
       $("#styleNo").focus();
     }
   } else {
-    warningAlert("Buyer Name not selected... Please Select Buyer Name");
-    $("#buyerName").focus();
-  }
-
-}
-
-function itemSizeEdit() {
-
-  var buyerPOId = $("#buyerPOId").val();
-  var itemAutoId = $("#itemAutoId").val();
-  var buyerId = $("#buyerName").val();
-  var styleId = $("#styleNo").val();
-  var itemId = $("#itemType").val();
-  var factoryId = $("#factory").val();
-  var colorId = $("#color").val();
-  var sizeGroupId = $("#sizeGroup").val();
-  var customerOrder = $("#customerOrder").val();
-  var purchaseOrder = $("#purchaseOrder").val();
-  var shippingMark = $("#shippingMark").val();
-  var userId = $("#userId").val();
-  var totalUnit = 0;
-
-
-  if (buyerId != 0) {
-    if (styleId != 0) {
-      if (itemId != 0) {
-        if (factoryId != 0) {
-          if (colorId != 0) {
-            if (sizeGroupId != 0) {
-              var sizeListLength = $(".sizeValue").length;
-              var sizeList = "";
-              for (var i = 0; i < sizeListLength; i++) {
-                var quantity = $("#sizeValue" + i).val().trim() == "" ? "0" : $("#sizeValue" + i).val().trim();
-                var id = $("#sizeId" + i).val().trim();
-                sizeList += "id=" + id + ",quantity=" + quantity + " ";
-                totalUnit += Number(quantity);
-              }
-
-
-              $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: './editBuyerPoItem',
-                data: {
-                  autoId: itemAutoId,
-                  buyerPOId: buyerPOId,
-                  buyerId: buyerId,
-                  styleId: styleId,
-                  itemId: itemId,
-                  factoryId: factoryId,
-                  colorId: colorId,
-                  customerOrder: customerOrder,
-                  purchaseOrder: purchaseOrder,
-                  shippingMark: shippingMark,
-                  sizeGroupId: sizeGroupId,
-                  sizeListString: sizeList,
-                  totalUnit: totalUnit,
-                  unitCmt: 1,
-                  totalPrice: 1,
-                  unitFob: 1,
-                  totalAmount: 1,
-                  userId: userId
-                },
-                success: function (data) {
-                  if (data.result == "Something Wrong") {
-                    dangerAlert("Something went wrong");
-                  } else if (data.result == "duplicate") {
-                    dangerAlert("Duplicate Item Name..This Item Name Already Exist")
-                  } else {
-                    drawItemTable(data.result);
-                  }
-                }
-              });
-
-            } else {
-              warningAlert("Size Group not selected ... Please Select Size group");
-              $("#sizeGroup").focus();
-            }
-          } else {
-            warningAlert("Color Not Selected... Please Select Color");
-            $("#color").focus();
-          }
-        } else {
-          warningAlert("Factory not selected... Please Select Factory Name");
-          $("#factoryId").focus();
-        }
-      } else {
-        warningAlert("Item Type not selected... Please Select Item Type");
-        $("#itemType").focus();
-      }
-    } else {
-      warningAlert("Style No not selected... Please Select Style No");
-      $("#styleNo").focus();
-    }
-  } else {
-    warningAlert("Buyer Name not selected... Please Select Buyer Name");
-    $("#buyerName").focus();
+    warningAlert("Purchase order not selected... Please Select Purchase order");
+    $("#purchaseOrder").focus();
   }
 
 }
@@ -332,7 +217,7 @@ function submitAction() {
 }
 
 
-function buyerPoEditAction() {
+function purchaseOrderEditAction() {
 
   var buyerPoId = $("#buyerPOId").val();
   var buyerId = $("#buyerName").val();
