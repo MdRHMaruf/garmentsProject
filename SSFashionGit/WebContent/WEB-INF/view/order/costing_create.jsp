@@ -7,6 +7,7 @@
 <%@page import="pg.model.login"%>
 <%@page import="java.util.List"%>
 <jsp:include page="../include/header.jsp" />
+
 <%
 	List<login> lg = (List<login>) session.getAttribute("pg_admin");
 %>
@@ -249,6 +250,7 @@
 		</div>
 	</div>
 </div>
+
 <!--Search Modal -->
 <div class="modal fade" id="searchModal" tabindex="-1" role="dialog"
 	aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -380,6 +382,5 @@
 	</div>
 </div>
 <jsp:include page="../include/footer.jsp" />
-
 <script
 	src="${pageContext.request.contextPath}/assets/js/order/costing_create.js"></script>

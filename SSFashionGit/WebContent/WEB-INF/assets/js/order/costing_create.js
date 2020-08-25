@@ -1,3 +1,4 @@
+
 var itemIdForSet = 0;
 var particularItemIdForSet = 0;
 function styleWiseItemLoad() {
@@ -501,3 +502,4 @@ $(document).ready(function () {
 
 var today = new Date();
 document.getElementById("submissionDate").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+

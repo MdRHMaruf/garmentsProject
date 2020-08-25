@@ -1,7 +1,9 @@
 package pg.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import pg.model.login;
 import pg.orderModel.BuyerPO;
 import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
@@ -12,14 +14,18 @@ import pg.registerModel.FabricsItem;
 import pg.registerModel.ItemDescription;
 import pg.registerModel.ParticularItem;
 import pg.registerModel.SizeGroup;
-import pg.registerModel.StyleItem;
 
 public interface OrderDAO {
+
+
 	List<ItemDescription> getItemDescriptionList();
-	List<Style> getBuyerWiseStylesItem(String buyerId);
-	List<ItemDescription> getStyleWiseItem(String styleId);
+	boolean SaveStyleCreate(String user, String buyerName, String itemName, String styleNo,String size, String date,
+			String frontimg, String backimg) throws SQLException;
+
+	List<Style> getStyleWiseItemList();
 	
 	List<Style> getStyleList();
+	List<Style> getStyleWiseItem(String value);
 	
 	List<ParticularItem> getTypeWiseParticularList(String type);
 	boolean saveCosting(Costing costing);
@@ -51,4 +57,5 @@ public interface OrderDAO {
 	List<FabricsIndent> getFabricsIndentList();
 	FabricsIndent getFabricsIndent(String indentId);
 	double getOrderQuantity(String purchaseOrder,String styleId,String itemId,String colorId);
+
 }

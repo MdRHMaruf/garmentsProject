@@ -1,24 +1,37 @@
 package pg.controller;
 
-import java.util.ArrayList;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
+import pg.model.login;
+import pg.orderModel.Style;
 import pg.orderModel.BuyerPO;
 import pg.orderModel.BuyerPoItem;
 import pg.orderModel.Costing;
@@ -43,26 +56,60 @@ import pg.services.RegisterService;
 import pg.share.PaymentType;
 
 @Controller
-@RestController
+@SessionAttributes({"pg_admin"})
 public class OrderController {
-
+	
+	private static final String UPLOAD_DIRECTORY ="/WEB-INF/upload";  
+	
 	@Autowired
 	private OrderService orderService;
+	
 	@Autowired
 	private RegisterService registerService;
-
+	
 	//Order Create 
 	@RequestMapping(value = "/style_create",method=RequestMethod.GET)
 	public ModelAndView style_create(ModelMap map,HttpSession session) {
 
 		ModelAndView view = new ModelAndView("order/style_create");
-		//List<Brand> brandList = registerService.getBrandList();
-		//System.out.println("list size="+brandList.size());
+		List<BuyerModel> List= registerService.getAllBuyers();
+		List<ItemDescription> itemList= orderService.getItemDescriptionList();
+		
+		List<Style> styleList= orderService.getStyleWiseItemList();
 
-		//map.addAttribute("brandList",);
+		map.addAttribute("buyerList",List);
+		map.addAttribute("itemList",itemList);
+		map.addAttribute("styleList",styleList);
 
 		return view; //JSP - /WEB-INF/view/index.jsp
 	}
+   @ResponseBody
+	  @RequestMapping(value = "/submitStyleFiles", method = RequestMethod.POST)
+	  public ModelAndView submitFiles(@RequestParam String buyerId,@RequestParam String itemId,@RequestParam String styleNo,@RequestParam String size,@RequestParam String date,@RequestParam CommonsMultipartFile frontImage,@RequestParam CommonsMultipartFile backImage,HttpSession session) throws IOException, SQLException {
+		
+ 		List<login> user=(List<login>)session.getAttribute("pg_admin");
+ 		
+ 		
+ 		 
+		String frontimg=getImageName(frontImage,session);
+		System.out.println("frontimg "+frontimg);
+		
+		String backimg=getImageName(backImage,session);
+		System.out.println("backimg "+backimg);
+		
+		String userId=Integer.toString(user.get(0).getId());
+		
+		boolean flag=orderService.SaveStyleCreate(userId,buyerId,itemId,styleNo,size,date,frontimg,backimg) ;
+		
+		if(flag) {
+			System.out.println("Sucess");
+      }
+		
+		ModelAndView view=new ModelAndView("order/style_create");
+				
+		return view;
+	  }
+
 
 	//Costing Create Work of nasir bai...
 	@RequestMapping(value = "/costing_create",method=RequestMethod.GET)
@@ -183,34 +230,143 @@ public class OrderController {
 			obj.put("id", List.get(a).getItemId());
 			obj.put("value", List.get(a).getItemName());
 			mainarray.add(obj);
-		}
+
+	private String getImageName(CommonsMultipartFile frontImage, HttpSession session) throws IOException  {
+ 			ServletContext context = session.getServletContext();  
+ 		    String path = context.getRealPath(UPLOAD_DIRECTORY);  
+ 		    
+ 		    String filename = frontImage.getOriginalFilename();  
+ 		    
+ 		    byte[] bytes = frontImage.getBytes();  
+ 		    BufferedOutputStream stream =new BufferedOutputStream(new FileOutputStream(  
+ 		         new File(path + File.separator + filename)));  
+ 		    stream.write(bytes);  
+ 		    stream.flush();  
+ 		    stream.close();  
+
+ 			String frontfile=session.getServletContext().getRealPath("WEB-INF/upload/"+filename);
+ 			
+ 			return frontfile;
+ 	  }
+
+
+
+/*	@RequestMapping(value = "/btnSaveAction",method=RequestMethod.POST)
+	public @ResponseBody String btnSaveAction(Style v,@RequestPart("file") CommonsMultipartFile frontimage,HttpSession session) throws Exception{
+
+		System.out.println("buyername "+v.getBuyername());
+ 		System.out.println("itemname "+v.getItemname());
+ 		System.out.println("styleno "+v.getStyleno());
+ 		System.out.println("date "+v.getDate());
+ 		
+ 		System.out.println("frontiamge "+v.getFrontimage());
+ 		
+		
+ 		
+ 		
+ 		String frontimg=getImageName(v.getFrontImage(),session);
+		System.out.println("frontimg "+frontimg);
+		
+		String backimg=getImageName(v.getBackImage(),session);
+		System.out.println("backimg "+backimg);
+		
+		
+		ServletContext context = session.getServletContext();  
+	    String path = context.getRealPath(UPLOAD_DIRECTORY);  
+	    
+
+	    String filename = file.getOriginalFilename();  
+	    
+	    byte[] bytes = file.getBytes();  
+	    BufferedOutputStream stream =new BufferedOutputStream(new FileOutputStream(  
+	         new File(path + File.separator + filename)));  
+	    stream.write(bytes);  
+	    stream.flush();  
+	    stream.close();  
+
+	    
+		
+		String pfile=session.getServletContext().getRealPath("WEB-INF/upload/"+filename);
+		
+	    return "You Success";
+	}
+	*/
+/*	@RequestMapping(value="/fronimage",method=RequestMethod.POST)
+	public void fronimageupload(@RequestParam CommonsMultipartFile backimage,HttpSession session) throws Exception
+	{
+		ServletContext context = session.getServletContext();  
+	    String path = context.getRealPath(UPLOAD_DIRECTORY);  
+	    
+	    System.out.println("pathname"+path);  
+	   
+	    
+	    String filename = backimage.getOriginalFilename();  
+	    
+	    byte[] bytes = backimage.getBytes();  
+	    BufferedOutputStream stream =new BufferedOutputStream(new FileOutputStream(  
+	         new File(path + File.separator + filename)));  
+	    stream.write(bytes);  
+	    stream.flush();  
+	    stream.close();  
+
+	           
+	    
+	    System.out.println("filename"+filename);  
+	    System.out.println(path+"'"+filename);        
+	    
+		
+		String pfile=session.getServletContext().getRealPath("WEB-INF/upload/"+filename);
+	    System.out.println("pfile"+pfile);  
+		
+	}*/
+	
+	
+	
+	//Order Create 
+	@RequestMapping(value = "/costing_create",method=RequestMethod.GET)
+	public ModelAndView costing_create(ModelMap map,HttpSession session) {
+
+		ModelAndView view = new ModelAndView("order/costing_create");
+		
+		
+		List<BuyerModel> List= registerService.getAllBuyers();
+		List<ItemDescription> itemList= orderService.getItemDescriptionList();
+		
+		List<Style> styleList= orderService.getStyleList();
+    map.addAttribute("styleList",styleList);
+		map.addAttribute("itemList",itemList);
+		//map.addAttribute("styleList",styleList);
+    
+    return view; //JSP - /WEB-INF/view/index.jsp
+	}
+      
+  @RequestMapping(value = "/getStyleWiseItem/{value}",method=RequestMethod.GET)
+	public @ResponseBody JSONObject getStyleWiseItem(@PathVariable ("value") String value) {
+  JSONObject objmain = new JSONObject();
+	JSONArray mainarray = new JSONArray();
+		
+		List<Style> lablist=orderService.getStyleWiseItem(value);
+		
+
+		for(int a=0;a<lablist.size();a++) {
+        JSONObject obj = new JSONObject();
+
+			  //obj.put("id", lablist.get(a).getItemId());
+			  //obj.put("value", lablist.get(a).getItemName());
+			
+			  mainarray.add(obj);
+     }
+
 
 		objmain.put("result", mainarray);
+
 		System.out.println(objmain.toString());
+
 		return objmain;
+
+
+		
 	}
-
-	@RequestMapping(value = "/buyerLoad",method=RequestMethod.GET)
-	public @ResponseBody JSONObject buyerLoad() {
-		JSONObject objmain = new JSONObject();
-
-
-		JSONArray mainarray = new JSONArray();
-
-		/*		List<Buyer> List= orderService.getBuyerList();
-
-		for(int a=0;a<List.size();a++) {
-			JSONObject obj = new JSONObject();
-			obj.put("id", List.get(a).getBuyerId());
-			obj.put("value", List.get(a).getBuyerName());
-			mainarray.add(obj);
-		}*/
-
-		objmain.put("result", mainarray);
-		System.out.println(objmain.toString());
-		return objmain;
-	}
-
 
 	//Buyer Purchase Order Create
 	@RequestMapping(value = "/buyer_purchase_order",method=RequestMethod.GET)
@@ -229,9 +385,8 @@ public class OrderController {
 		view.addObject("buyerPoList",buyerPoList);
 		return view; //JSP - /WEB-INF/view/index.jsp
 	}
-
-
-	@ResponseBody
+		
+  @ResponseBody
 	@RequestMapping(value = "/sizesLoadByGroup",method=RequestMethod.GET)
 	public JSONObject sizesLoadByGroup() {
 
@@ -312,12 +467,9 @@ public class OrderController {
 
 		return objmain;
 	}
-
-	@RequestMapping(value = "/getBuyerPOItemsList",method=RequestMethod.GET)
+  
+   @RequestMapping(value = "/getBuyerPOItemsList",method=RequestMethod.GET)
 	public @ResponseBody JSONObject getBuyerPOItemsList(String buyerPoNo) {
-		JSONObject objmain = new JSONObject();
-
-
 		JSONArray mainArray = new JSONArray();
 		List<BuyerPoItem> buyerPOItemList = orderService.getBuyerPOItemList(buyerPoNo);
 		objmain.put("result",buyerPOItemList);
@@ -347,11 +499,11 @@ public class OrderController {
 			objmain.put("result",buyerPOItemList);
 		}else {
 			objmain.put("result","Something Wrong");
-		}
+    }
 		return objmain;
 	}
 
-	@RequestMapping(value = "/getBuyerPO",method=RequestMethod.GET)
+      @RequestMapping(value = "/getBuyerPO",method=RequestMethod.GET)
 	public @ResponseBody JSONObject getBuyerPO(String buyerPoNo) {
 		JSONObject objmain = new JSONObject();
 
@@ -376,8 +528,8 @@ public class OrderController {
 
 		return objmain;
 	}
-
-	@RequestMapping(value = "/editBuyerPO",method=RequestMethod.POST)
+  
+  @RequestMapping(value = "/editBuyerPO",method=RequestMethod.POST)
 	public @ResponseBody JSONObject editBuyerPO(BuyerPO buyerPO) {
 		JSONObject objmain = new JSONObject();
 
@@ -509,8 +661,4 @@ public class OrderController {
 		view.addObject("merchendiserList",merchandiserList);
 		return view; //JSP - /WEB-INF/view/index.jsp
 	}
-
-	
-
-
 }
